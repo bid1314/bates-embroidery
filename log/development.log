@@ -1,0 +1,597 @@
+  [1m[35m (53.0ms)[0m  [1m[35mCREATE DATABASE "bates_embroidery_development" ENCODING = 'unicode'[0m
+  [1m[35m (40.0ms)[0m  [1m[35mCREATE DATABASE "bates_embroidery_test" ENCODING = 'unicode'[0m
+  [1m[35m (1.7ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT pg_try_advisory_lock(7606000263993000135)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.4ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2025-06-11 02:24:05.893104', '2025-06-11 02:24:05.893107') RETURNING "key"[0m
+Migrating to DeviseCreateUsers (20250611022153)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying DEFAULT '' NOT NULL, "encrypted_password" character varying DEFAULT '' NOT NULL, "reset_password_token" character varying, "reset_password_sent_at" timestamp(6), "remember_created_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_email" ON "users" ("email")[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_users_on_reset_password_token" ON "users" ("reset_password_token")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250611022153') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateStores (20250611022201)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.9ms)[0m  [1m[35mCREATE TABLE "stores" ("id" bigserial primary key, "name" character varying, "subdomain" character varying, "domain" character varying, "active" boolean, "settings" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250611022201') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateProducts (20250611022209)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (2.2ms)[0m  [1m[35mCREATE TABLE "products" ("id" bigserial primary key, "name" character varying, "description" text, "sku" character varying, "price" decimal, "supplier_id" character varying, "supplier_type" character varying, "active" boolean, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250611022209') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateCustomizations (20250611022216)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (2.8ms)[0m  [1m[35mCREATE TABLE "customizations" ("id" bigserial primary key, "user_id" bigint NOT NULL, "product_id" bigint NOT NULL, "design_data" text, "ai_estimation" text, "status" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_ae315f4e2c"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_b3a42f8b4b"
+FOREIGN KEY ("product_id")
+  REFERENCES "products" ("id")
+)[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_customizations_on_user_id" ON "customizations" ("user_id")[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_customizations_on_product_id" ON "customizations" ("product_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250611022216') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+Migrating to CreateOrders (20250611022225)
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (2.4ms)[0m  [1m[35mCREATE TABLE "orders" ("id" bigserial primary key, "user_id" bigint NOT NULL, "store_id" bigint NOT NULL, "total" decimal, "status" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_f868b47f6a"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+, CONSTRAINT "fk_rails_f0be2fda72"
+FOREIGN KEY ("store_id")
+  REFERENCES "stores" ("id")
+)[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_orders_on_user_id" ON "orders" ("user_id")[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_orders_on_store_id" ON "orders" ("store_id")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250611022225') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_advisory_unlock(7606000263993000135)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_try_advisory_lock(7606000263993000135)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to AddRoleToUsers (20250611022425)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (1.3ms)[0m  [1m[35mALTER TABLE "users" ADD "role" integer[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250611022425') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_advisory_unlock(7606000263993000135)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mStore Load (0.3ms)[0m  [1m[34mSELECT "stores".* FROM "stores" WHERE "stores"."subdomain" = $1 LIMIT $2[0m  [["subdomain", "retail"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mStore Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "stores" WHERE "stores"."subdomain" = $1 LIMIT $2[0m  [["subdomain", "retail"], ["LIMIT", 1]]
+  [1m[36mStore Create (0.5ms)[0m  [1m[32mINSERT INTO "stores" ("name", "subdomain", "domain", "active", "settings", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["name", "Bates Embroidery Retail"], ["subdomain", "retail"], ["domain", "retail.batesembroidery.com"], ["active", true], ["settings", "{\"store_type\":\"retail\",\"pricing_visible\":true,\"markup_percentage\":50}"], ["created_at", "2025-06-11 02:25:38.749658"], ["updated_at", "2025-06-11 02:25:38.749658"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mStore Load (0.2ms)[0m  [1m[34mSELECT "stores".* FROM "stores" WHERE "stores"."subdomain" = $1 LIMIT $2[0m  [["subdomain", "b2b"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mStore Exists? (1.1ms)[0m  [1m[34mSELECT 1 AS one FROM "stores" WHERE "stores"."subdomain" = $1 LIMIT $2[0m  [["subdomain", "b2b"], ["LIMIT", 1]]
+  [1m[36mStore Create (0.3ms)[0m  [1m[32mINSERT INTO "stores" ("name", "subdomain", "domain", "active", "settings", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["name", "Bates Embroidery B2B"], ["subdomain", "b2b"], ["domain", "b2b.batesembroidery.com"], ["active", true], ["settings", "{\"store_type\":\"b2b\",\"pricing_visible\":false,\"requires_approval\":true,\"bulk_pricing\":true}"], ["created_at", "2025-06-11 02:25:38.756150"], ["updated_at", "2025-06-11 02:25:38.756150"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mStore Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "stores"[0m
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.5ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "created_at", "updated_at", "role") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["email", "[FILTERED]"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["created_at", "2025-06-11 02:25:38.985989"], ["updated_at", "2025-06-11 02:25:38.985989"], ["role", 2]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :supplier_type, {:sanmar=>0, :ss_activewear=>1, :custom=>2}
+ (called from <class:Product> at /workspace/bates-embroidery/app/models/product.rb:16)
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."sku" = $1 LIMIT $2[0m  [["sku", "COTTON-TEE-001"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mProduct Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "products" WHERE "products"."sku" = $1 LIMIT $2[0m  [["sku", "COTTON-TEE-001"], ["LIMIT", 1]]
+  [1m[36mProduct Create (0.4ms)[0m  [1m[32mINSERT INTO "products" ("name", "description", "sku", "price", "supplier_id", "supplier_type", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["name", "Classic Cotton T-Shirt"], ["description", "High-quality 100% cotton t-shirt perfect for embroidery"], ["sku", "COTTON-TEE-001"], ["price", "15.99"], ["supplier_id", "SM-CT001"], ["supplier_type", "0"], ["active", true], ["created_at", "2025-06-11 02:25:39.014009"], ["updated_at", "2025-06-11 02:25:39.014009"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."sku" = $1 LIMIT $2[0m  [["sku", "POLO-SHIRT-001"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mProduct Exists? (1.2ms)[0m  [1m[34mSELECT 1 AS one FROM "products" WHERE "products"."sku" = $1 LIMIT $2[0m  [["sku", "POLO-SHIRT-001"], ["LIMIT", 1]]
+  [1m[36mProduct Create (0.2ms)[0m  [1m[32mINSERT INTO "products" ("name", "description", "sku", "price", "supplier_id", "supplier_type", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["name", "Premium Polo Shirt"], ["description", "Professional polo shirt with moisture-wicking fabric"], ["sku", "POLO-SHIRT-001"], ["price", "24.99"], ["supplier_id", "SM-PS001"], ["supplier_type", "0"], ["active", true], ["created_at", "2025-06-11 02:25:39.019616"], ["updated_at", "2025-06-11 02:25:39.019616"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."sku" = $1 LIMIT $2[0m  [["sku", "HOODIE-001"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mProduct Exists? (1.0ms)[0m  [1m[34mSELECT 1 AS one FROM "products" WHERE "products"."sku" = $1 LIMIT $2[0m  [["sku", "HOODIE-001"], ["LIMIT", 1]]
+  [1m[36mProduct Create (0.2ms)[0m  [1m[32mINSERT INTO "products" ("name", "description", "sku", "price", "supplier_id", "supplier_type", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["name", "Fleece Hoodie"], ["description", "Comfortable fleece hoodie with front pocket"], ["sku", "HOODIE-001"], ["price", "39.99"], ["supplier_id", "SS-FH001"], ["supplier_type", "1"], ["active", true], ["created_at", "2025-06-11 02:25:39.025030"], ["updated_at", "2025-06-11 02:25:39.025030"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."sku" = $1 LIMIT $2[0m  [["sku", "CAP-001"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mProduct Exists? (1.1ms)[0m  [1m[34mSELECT 1 AS one FROM "products" WHERE "products"."sku" = $1 LIMIT $2[0m  [["sku", "CAP-001"], ["LIMIT", 1]]
+  [1m[36mProduct Create (0.3ms)[0m  [1m[32mINSERT INTO "products" ("name", "description", "sku", "price", "supplier_id", "supplier_type", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["name", "Baseball Cap"], ["description", "Adjustable baseball cap with structured crown"], ["sku", "CAP-001"], ["price", "18.99"], ["supplier_id", "SM-BC001"], ["supplier_type", "0"], ["active", true], ["created_at", "2025-06-11 02:25:39.030785"], ["updated_at", "2025-06-11 02:25:39.030785"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."sku" = $1 LIMIT $2[0m  [["sku", "TOTE-001"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mProduct Exists? (1.4ms)[0m  [1m[34mSELECT 1 AS one FROM "products" WHERE "products"."sku" = $1 LIMIT $2[0m  [["sku", "TOTE-001"], ["LIMIT", 1]]
+  [1m[36mProduct Create (0.2ms)[0m  [1m[32mINSERT INTO "products" ("name", "description", "sku", "price", "supplier_id", "supplier_type", "active", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["name", "Canvas Tote Bag"], ["description", "Durable canvas tote bag for everyday use"], ["sku", "TOTE-001"], ["price", "12.99"], ["supplier_id", "CUSTOM-TB001"], ["supplier_type", "2"], ["active", true], ["created_at", "2025-06-11 02:25:39.036556"], ["updated_at", "2025-06-11 02:25:39.036556"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mProduct Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "products"[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (1.6ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "created_at", "updated_at", "role") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["email", "[FILTERED]"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["created_at", "2025-06-11 02:25:39.265095"], ["updated_at", "2025-06-11 02:25:39.265095"], ["role", 0]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mUser Exists? (1.9ms)[0m  [1m[34mSELECT 1 AS one FROM "users" WHERE "users"."email" = $1 LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+  [1m[36mUser Create (0.3ms)[0m  [1m[32mINSERT INTO "users" ("email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "created_at", "updated_at", "role") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["email", "[FILTERED]"], ["encrypted_password", "[FILTERED]"], ["reset_password_token", "[FILTERED]"], ["reset_password_sent_at", "[FILTERED]"], ["remember_created_at", nil], ["created_at", "2025-06-11 02:25:39.490959"], ["updated_at", "2025-06-11 02:25:39.490959"], ["role", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mUser Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "users"[0m
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+[ActionDispatch::HostAuthorization::DefaultResponseApp] Blocked hosts: work-1-wjajrebstcyljkfs.prod-runtime.all-hands.dev, work-1-wjajrebstcyljkfs.prod-runtime.all-hands.dev
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+Started GET "/" for 10.1.0.113 at 2025-06-11 02:32:00 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by HomeController#index as HTML
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :supplier_type, {:sanmar=>0, :ss_activewear=>1, :custom=>2}
+ (called from <class:Product> at /workspace/bates-embroidery/app/models/product.rb:16)
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mProduct Load (0.3ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."active" = $1 LIMIT $2[0m  [["active", true], ["LIMIT", 6]]
+  ↳ app/views/home/index.html.erb:24
+  Rendered home/index.html.erb within layouts/application (Duration: 21.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 21.5ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 285ms (ActiveRecord: 10.6ms (1 query, 0 cached) | GC: 93.2ms)
+
+
+  
+ActionView::Template::Error (PG::UndefinedTable: ERROR:  relation "active_storage_attachments" does not exist
+LINE 10:  WHERE a.attrelid = '"active_storage_attachments"'::regclass
+                             ^
+):
+
+Causes:
+ActiveRecord::StatementInvalid (PG::UndefinedTable: ERROR:  relation "active_storage_attachments" does not exist
+LINE 10:  WHERE a.attrelid = '"active_storage_attachments"'::regclass
+                             ^
+)
+PG::UndefinedTable (ERROR:  relation "active_storage_attachments" does not exist
+LINE 10:  WHERE a.attrelid = '"active_storage_attachments"'::regclass
+                             ^
+)
+    25:       <div class="col-md-4 mb-4">
+    26:         <div class="card h-100">
+    27:           <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+    28:             <% if product.images.any? %>
+    29:               <%= image_tag product.images.first, class: "img-fluid", style: "max-height: 180px;" %>
+    30:             <% else %>
+    31:               <span class="text-muted">No Image</span>
+  
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_try_advisory_lock(7606000263993000135)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+Migrating to CreateActiveStorageTables (20250611023210)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (3.0ms)[0m  [1m[35mCREATE TABLE "active_storage_blobs" ("id" bigserial primary key, "key" character varying NOT NULL, "filename" character varying NOT NULL, "content_type" character varying, "metadata" text, "service_name" character varying NOT NULL, "byte_size" bigint NOT NULL, "checksum" character varying, "created_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_active_storage_blobs_on_key" ON "active_storage_blobs" ("key")[0m
+  [1m[35m (1.7ms)[0m  [1m[35mCREATE TABLE "active_storage_attachments" ("id" bigserial primary key, "name" character varying NOT NULL, "record_type" character varying NOT NULL, "record_id" bigint NOT NULL, "blob_id" bigint NOT NULL, "created_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_c3b3935057"
+FOREIGN KEY ("blob_id")
+  REFERENCES "active_storage_blobs" ("id")
+)[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE INDEX "index_active_storage_attachments_on_blob_id" ON "active_storage_attachments" ("blob_id")[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_active_storage_attachments_uniqueness" ON "active_storage_attachments" ("record_type", "record_id", "name", "blob_id")[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "active_storage_variant_records" ("id" bigserial primary key, "blob_id" bigint NOT NULL, "variation_digest" character varying NOT NULL, CONSTRAINT "fk_rails_993965df05"
+FOREIGN KEY ("blob_id")
+  REFERENCES "active_storage_blobs" ("id")
+)[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_active_storage_variant_records_uniqueness" ON "active_storage_variant_records" ("blob_id", "variation_digest")[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250611023210') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT pg_advisory_unlock(7606000263993000135)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Started GET "/" for 10.1.0.113 at 2025-06-11 02:32:20 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by HomeController#index as HTML
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :supplier_type, {:sanmar=>0, :ss_activewear=>1, :custom=>2}
+ (called from <class:Product> at /workspace/bates-embroidery/app/models/product.rb:16)
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."active" = $1 LIMIT $2[0m  [["active", true], ["LIMIT", 6]]
+  ↳ app/views/home/index.html.erb:24
+  [1m[36mActiveStorage::Attachment Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 1], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  [1m[36mActiveStorage::Attachment Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 2], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  [1m[36mActiveStorage::Attachment Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 3], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  [1m[36mActiveStorage::Attachment Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 4], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  [1m[36mActiveStorage::Attachment Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 5], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  Rendered home/index.html.erb within layouts/application (Duration: 20.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 248.1ms | GC: 51.7ms)
+Completed 200 OK in 262ms (Views: 244.1ms | ActiveRecord: 7.2ms (6 queries, 0 cached) | GC: 51.7ms)
+
+
+Started GET "/products" for 10.1.0.113 at 2025-06-11 02:32:30 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ProductsController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering products/index.html.erb within layouts/application
+  [1m[36mProduct Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "products" WHERE "products"."active" = $1 LIMIT $2[0m  [["active", true], ["LIMIT", 1]]
+  ↳ app/views/products/index.html.erb:31
+  [1m[36mProduct Load (0.3ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."active" = $1 LIMIT $2[0m  [["active", true], ["LIMIT", 20]]
+  ↳ app/views/products/index.html.erb:32
+  Rendered products/index.html.erb within layouts/application (Duration: 8.9ms | GC: 0.3ms)
+  Rendered layout layouts/application.html.erb (Duration: 9.1ms | GC: 0.3ms)
+Completed 500 Internal Server Error in 10ms (ActiveRecord: 0.8ms (2 queries, 0 cached) | GC: 0.3ms)
+
+
+  
+ActionView::Template::Error (Association named 'images' was not found on Product; perhaps you misspelled it?):
+
+Causes:
+ActiveRecord::AssociationNotFoundError (Association named 'images' was not found on Product; perhaps you misspelled it?)
+    29:   <!-- Products Grid -->
+    30:   <div class="row">
+    31:     <% if @products.any? %>
+    32:       <% @products.each do |product| %>
+    33:         <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+    34:           <div class="card h-100">
+    35:             <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+  
+app/views/products/index.html.erb:32
+Started GET "/products" for 10.1.0.113 at 2025-06-11 02:33:23 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+Processing by ProductsController#index as HTML
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :supplier_type, {:sanmar=>0, :ss_activewear=>1, :custom=>2}
+ (called from <class:Product> at /workspace/bates-embroidery/app/models/product.rb:16)
+  Rendering layout layouts/application.html.erb
+  Rendering products/index.html.erb within layouts/application
+  [1m[36mProduct Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "products" WHERE "products"."active" = $1 LIMIT $2[0m  [["active", true], ["LIMIT", 1]]
+  ↳ app/views/products/index.html.erb:31
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."active" = $1 LIMIT $2[0m  [["active", true], ["LIMIT", 20]]
+  ↳ app/views/products/index.html.erb:32
+  Rendered products/index.html.erb within layouts/application (Duration: 10.5ms | GC: 0.5ms)
+  Rendered layout layouts/application.html.erb (Duration: 10.7ms | GC: 0.5ms)
+Completed 500 Internal Server Error in 25ms (ActiveRecord: 3.7ms (2 queries, 0 cached) | GC: 1.3ms)
+
+
+  
+ActionView::Template::Error (undefined method `humanize' for nil:NilClass):
+
+Causes:
+NoMethodError (undefined method `humanize' for nil:NilClass)
+    41:               <div class="mt-auto">
+    42:                 <p class="card-text mb-2">
+    43:                   <strong><%= product.display_price %></strong>
+    44:                   <small class="text-muted">(<%= product.supplier_type.humanize %>)</small>
+    45:                 </p>
+    46:                 <%= link_to "View Details", product_path(product), class: "btn btn-primary w-100" %>
+    47:               </div>
+  
+app/views/products/index.html.erb:44
+app/views/products/index.html.erb:32
+Started GET "/products" for 10.1.0.113 at 2025-06-11 02:33:46 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+Processing by ProductsController#index as HTML
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :supplier_type, {:sanmar=>0, :ss_activewear=>1, :custom=>2}
+ (called from <class:Product> at /workspace/bates-embroidery/app/models/product.rb:16)
+  Rendering layout layouts/application.html.erb
+  Rendering products/index.html.erb within layouts/application
+  [1m[36mProduct Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "products" WHERE "products"."active" = $1 LIMIT $2[0m  [["active", true], ["LIMIT", 1]]
+  ↳ app/views/products/index.html.erb:31
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."active" = $1 LIMIT $2[0m  [["active", true], ["LIMIT", 20]]
+  ↳ app/views/products/index.html.erb:32
+  Rendered products/index.html.erb within layouts/application (Duration: 9.7ms | GC: 0.5ms)
+  Rendered layout layouts/application.html.erb (Duration: 19.2ms | GC: 1.5ms)
+Completed 200 OK in 34ms (Views: 18.4ms | ActiveRecord: 3.7ms (2 queries, 0 cached) | GC: 4.9ms)
+
+
+Started GET "/products/1" for 10.1.0.113 at 2025-06-11 02:33:54 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ProductsController#show as HTML
+  Parameters: {"id"=>"1"}
+  [1m[36mProduct Load (0.3ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:37:in `set_product'
+  Rendering layout layouts/application.html.erb
+  Rendering products/show.html.erb within layouts/application
+  Rendered products/show.html.erb within layouts/application (Duration: 1.1ms | GC: 0.1ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.7ms | GC: 0.1ms)
+Completed 200 OK in 7ms (Views: 3.0ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/products/1" for 10.1.0.113 at 2025-06-11 02:33:54 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ProductsController#show as HTML
+  Parameters: {"id"=>"1"}
+  [1m[36mProduct Load (0.3ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:37:in `set_product'
+  Rendering layout layouts/application.html.erb
+  Rendering products/show.html.erb within layouts/application
+  Rendered products/show.html.erb within layouts/application (Duration: 0.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 1.9ms | GC: 0.1ms)
+Completed 200 OK in 5ms (Views: 2.2ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/users/sign_in" for 10.1.0.113 at 2025-06-11 02:34:01 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering /var/lib/gems/3.1.0/gems/devise-4.9.4/app/views/devise/sessions/new.html.erb within layouts/application
+  Rendered /var/lib/gems/3.1.0/gems/devise-4.9.4/app/views/devise/shared/_links.html.erb (Duration: 0.9ms | GC: 0.1ms)
+  Rendered /var/lib/gems/3.1.0/gems/devise-4.9.4/app/views/devise/sessions/new.html.erb within layouts/application (Duration: 8.8ms | GC: 0.3ms)
+  Rendered layout layouts/application.html.erb (Duration: 10.9ms | GC: 0.3ms)
+Completed 200 OK in 24ms (Views: 13.0ms | ActiveRecord: 2.6ms (0 queries, 0 cached) | GC: 0.9ms)
+
+
+Started GET "/users/sign_in" for 10.1.0.113 at 2025-06-11 02:34:01 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by Devise::SessionsController#new as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering /var/lib/gems/3.1.0/gems/devise-4.9.4/app/views/devise/sessions/new.html.erb within layouts/application
+  Rendered /var/lib/gems/3.1.0/gems/devise-4.9.4/app/views/devise/shared/_links.html.erb (Duration: 0.1ms | GC: 0.0ms)
+  Rendered /var/lib/gems/3.1.0/gems/devise-4.9.4/app/views/devise/sessions/new.html.erb within layouts/application (Duration: 1.6ms | GC: 0.3ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.2ms | GC: 0.3ms)
+Completed 200 OK in 5ms (Views: 3.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.3ms)
+
+
+Started POST "/users/sign_in" for 10.1.0.113 at 2025-06-11 02:34:17 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by Devise::SessionsController#create as TURBO_STREAM
+  Parameters: {"authenticity_token"=>"[FILTERED]", "user"=>{"email"=>"[FILTERED]", "password"=>"[FILTERED]", "remember_me"=>"0"}, "commit"=>"Log in"}
+  [1m[36mUser Load (0.4ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."email" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["email", "[FILTERED]"], ["LIMIT", 1]]
+Redirected to https://work-1-wjajrebstcyljkfs.prod-runtime.all-hands.dev/
+Completed 303 See Other in 222ms (ActiveRecord: 0.4ms (1 query, 0 cached) | GC: 0.4ms)
+
+
+Started GET "/" for 10.1.0.113 at 2025-06-11 02:34:18 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by HomeController#index as TURBO_STREAM
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mProduct Load (0.3ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."active" = $1 LIMIT $2[0m  [["active", true], ["LIMIT", 6]]
+  ↳ app/views/home/index.html.erb:24
+  [1m[36mActiveStorage::Attachment Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 1], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  [1m[36mActiveStorage::Attachment Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 2], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  [1m[36mActiveStorage::Attachment Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 3], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  [1m[36mActiveStorage::Attachment Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 4], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  [1m[36mActiveStorage::Attachment Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 5], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  Rendered home/index.html.erb within layouts/application (Duration: 23.3ms | GC: 9.7ms)
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/views/layouts/application.html.erb:48
+  Rendered layout layouts/application.html.erb (Duration: 26.7ms | GC: 9.8ms)
+Completed 200 OK in 32ms (Views: 23.6ms | ActiveRecord: 4.9ms (7 queries, 0 cached) | GC: 10.2ms)
+
+
+Started GET "/" for 10.1.0.113 at 2025-06-11 02:34:18 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  [1m[36mProduct Load (0.3ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."active" = $1 LIMIT $2[0m  [["active", true], ["LIMIT", 6]]
+  ↳ app/views/home/index.html.erb:24
+  [1m[36mActiveStorage::Attachment Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 1], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  [1m[36mActiveStorage::Attachment Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 2], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  [1m[36mActiveStorage::Attachment Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 3], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  [1m[36mActiveStorage::Attachment Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 4], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  [1m[36mActiveStorage::Attachment Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = $1 AND "active_storage_attachments"."record_type" = $2 AND "active_storage_attachments"."name" = $3 LIMIT $4[0m  [["record_id", 5], ["record_type", "Product"], ["name", "images"], ["LIMIT", 1]]
+  ↳ app/views/home/index.html.erb:28
+  Rendered home/index.html.erb within layouts/application (Duration: 9.2ms | GC: 0.4ms)
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/views/layouts/application.html.erb:48
+  Rendered layout layouts/application.html.erb (Duration: 12.2ms | GC: 0.4ms)
+Completed 200 OK in 13ms (Views: 10.3ms | ActiveRecord: 2.2ms (7 queries, 0 cached) | GC: 0.4ms)
+
+
+Started GET "/products/1" for 10.1.0.113 at 2025-06-11 02:34:26 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ProductsController#show as HTML
+  Parameters: {"id"=>"1"}
+  [1m[36mProduct Load (0.4ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:37:in `set_product'
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:12:in `show'
+  Rendering layout layouts/application.html.erb
+  Rendering products/show.html.erb within layouts/application
+  Rendered products/show.html.erb within layouts/application (Duration: 2.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.6ms | GC: 0.0ms)
+Completed 200 OK in 21ms (Views: 4.2ms | ActiveRecord: 2.9ms (2 queries, 0 cached) | GC: 1.1ms)
+
+
+Started GET "/products/1" for 10.1.0.113 at 2025-06-11 02:34:26 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ProductsController#show as HTML
+  Parameters: {"id"=>"1"}
+  [1m[36mProduct Load (0.3ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:37:in `set_product'
+  [1m[36mUser Load (0.3ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:12:in `show'
+  Rendering layout layouts/application.html.erb
+  Rendering products/show.html.erb within layouts/application
+  Rendered products/show.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.5ms | GC: 0.1ms)
+Completed 200 OK in 7ms (Views: 2.9ms | ActiveRecord: 0.5ms (2 queries, 0 cached) | GC: 0.2ms)
+
+
+Started POST "/products/1/save_customization" for 10.1.0.113 at 2025-06-11 02:34:35 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ProductsController#save_customization as TURBO_STREAM
+  Parameters: {"authenticity_token"=>"[FILTERED]", "customization"=>{"design_data"=>"I would like to add my company logo on the front chest area and \"ACME Corp\" text below it in blue thread."}, "commit"=>"Save Customization", "id"=>"1"}
+  [1m[36mProduct Load (0.3ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:37:in `set_product'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:20:in `save_customization'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/controllers/products_controller.rb:24:in `save_customization'
+  [1m[36mCustomization Create (1.9ms)[0m  [1m[32mINSERT INTO "customizations" ("user_id", "product_id", "design_data", "ai_estimation", "status", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 2], ["product_id", 1], ["design_data", "I would like to add my company logo on the front chest area and \"ACME Corp\" text below it in blue thread."], ["ai_estimation", nil], ["status", nil], ["created_at", "2025-06-11 02:34:35.233611"], ["updated_at", "2025-06-11 02:34:35.233611"]]
+  ↳ app/controllers/products_controller.rb:24:in `save_customization'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/controllers/products_controller.rb:24:in `save_customization'
+Redirected to https://work-1-wjajrebstcyljkfs.prod-runtime.all-hands.dev/products/1
+Completed 302 Found in 10ms (ActiveRecord: 2.7ms (3 queries, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/products/1" for 10.1.0.113 at 2025-06-11 02:34:35 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ProductsController#show as TURBO_STREAM
+  Parameters: {"id"=>"1"}
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:37:in `set_product'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:12:in `show'
+  Rendering layout layouts/application.html.erb
+  Rendering products/show.html.erb within layouts/application
+  Rendered products/show.html.erb within layouts/application (Duration: 0.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.2ms | GC: 0.0ms)
+Completed 200 OK in 6ms (Views: 2.6ms | ActiveRecord: 0.4ms (2 queries, 0 cached) | GC: 0.2ms)
+
+
+Started GET "/products/1" for 10.1.0.113 at 2025-06-11 02:34:35 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ProductsController#show as HTML
+  Parameters: {"id"=>"1"}
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:37:in `set_product'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:12:in `show'
+  Rendering layout layouts/application.html.erb
+  Rendering products/show.html.erb within layouts/application
+  Rendered products/show.html.erb within layouts/application (Duration: 0.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.6ms | GC: 0.1ms)
+Completed 200 OK in 7ms (Views: 2.9ms | ActiveRecord: 0.3ms (2 queries, 0 cached) | GC: 0.3ms)
+
+
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+Started POST "/products/1/save_customization" for 10.1.0.113 at 2025-06-11 02:35:09 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+Processing by ProductsController#save_customization as TURBO_STREAM
+  Parameters: {"authenticity_token"=>"[FILTERED]", "customization"=>{"design_data"=>"I would like to add my company logo on the front chest area and \"ACME Corp\" text below it in blue thread."}, "commit"=>"Save Customization", "id"=>"1"}
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :supplier_type, {:sanmar=>0, :ss_activewear=>1, :custom=>2}
+ (called from <class:Product> at /workspace/bates-embroidery/app/models/product.rb:16)
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:48:in `set_product'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:31:in `save_customization'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  ↳ app/controllers/products_controller.rb:35:in `save_customization'
+  [1m[36mCustomization Create (1.3ms)[0m  [1m[32mINSERT INTO "customizations" ("user_id", "product_id", "design_data", "ai_estimation", "status", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["user_id", 2], ["product_id", 1], ["design_data", "I would like to add my company logo on the front chest area and \"ACME Corp\" text below it in blue thread."], ["ai_estimation", nil], ["status", nil], ["created_at", "2025-06-11 02:35:09.667556"], ["updated_at", "2025-06-11 02:35:09.667556"]]
+  ↳ app/controllers/products_controller.rb:35:in `save_customization'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT[0m
+  ↳ app/controllers/products_controller.rb:35:in `save_customization'
+Redirected to https://work-1-wjajrebstcyljkfs.prod-runtime.all-hands.dev/products/1
+Completed 302 Found in 32ms (ActiveRecord: 8.6ms (3 queries, 0 cached) | GC: 1.7ms)
+
+
+Started GET "/products/1" for 10.1.0.113 at 2025-06-11 02:35:09 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ProductsController#show as TURBO_STREAM
+  Parameters: {"id"=>"1"}
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:48:in `set_product'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:12:in `show'
+  Rendering layout layouts/application.html.erb
+  Rendering products/show.html.erb within layouts/application
+  Rendered products/show.html.erb within layouts/application (Duration: 9.1ms | GC: 7.7ms)
+  Rendered layout layouts/application.html.erb (Duration: 18.3ms | GC: 8.9ms)
+Completed 200 OK in 23ms (Views: 19.2ms | ActiveRecord: 0.3ms (2 queries, 0 cached) | GC: 9.0ms)
+
+
+Started GET "/products/1" for 10.1.0.113 at 2025-06-11 02:35:09 +0000
+Cannot render console from 10.1.0.113! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+Processing by ProductsController#show as HTML
+  Parameters: {"id"=>"1"}
+  [1m[36mProduct Load (0.2ms)[0m  [1m[34mSELECT "products".* FROM "products" WHERE "products"."id" = $1 LIMIT $2[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:48:in `set_product'
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = $1 ORDER BY "users"."id" ASC LIMIT $2[0m  [["id", 2], ["LIMIT", 1]]
+  ↳ app/controllers/products_controller.rb:12:in `show'
+  Rendering layout layouts/application.html.erb
+  Rendering products/show.html.erb within layouts/application
+  Rendered products/show.html.erb within layouts/application (Duration: 0.8ms | GC: 0.2ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.3ms | GC: 0.2ms)
+Completed 200 OK in 7ms (Views: 2.7ms | ActiveRecord: 0.4ms (2 queries, 0 cached) | GC: 0.5ms)
+
+

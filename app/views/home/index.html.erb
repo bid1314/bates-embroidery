@@ -1,0 +1,75 @@
+<div class="hero-section bg-primary text-white py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8">
+        <h1 class="display-4 fw-bold">Bates Embroidery</h1>
+        <p class="lead">Custom embroidery and promotional products for retail and wholesale customers</p>
+        <div class="mt-4">
+          <%= link_to "Shop Retail Store", products_path, class: "btn btn-light btn-lg me-3" %>
+          <%= link_to "B2B Portal", "#", class: "btn btn-outline-light btn-lg" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container my-5">
+  <div class="row">
+    <div class="col-12">
+      <h2 class="text-center mb-4">Featured Products</h2>
+    </div>
+  </div>
+  
+  <div class="row">
+    <% @featured_products.each do |product| %>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100">
+          <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+            <% if product.images.any? %>
+              <%= image_tag product.images.first, class: "img-fluid", style: "max-height: 180px;" %>
+            <% else %>
+              <span class="text-muted">No Image</span>
+            <% end %>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title"><%= product.name %></h5>
+            <p class="card-text"><%= truncate(product.description, length: 100) %></p>
+            <p class="card-text"><strong><%= product.display_price %></strong></p>
+          </div>
+          <div class="card-footer">
+            <%= link_to "View Product", product_path(product), class: "btn btn-primary" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  
+  <div class="text-center mt-4">
+    <%= link_to "View All Products", products_path, class: "btn btn-outline-primary btn-lg" %>
+  </div>
+</div>
+
+<div class="bg-light py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6">
+        <h3>Retail Store</h3>
+        <p>Browse our full catalog of customizable products with transparent pricing.</p>
+        <ul>
+          <li>Live 2D customization</li>
+          <li>AI-powered stitch estimation</li>
+          <li>Save designs to your account</li>
+        </ul>
+      </div>
+      <div class="col-lg-6">
+        <h3>B2B Portal</h3>
+        <p>Wholesale pricing and bulk ordering for approved business customers.</p>
+        <ul>
+          <li>Volume discounts</li>
+          <li>Custom branding options</li>
+          <li>Dedicated account management</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

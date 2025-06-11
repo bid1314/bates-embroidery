@@ -1,0 +1,110 @@
+<div class="container my-4">
+  <div class="row">
+    <div class="col-md-6">
+      <!-- Product Image -->
+      <div class="product-image bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
+        <span class="text-muted">No Image Available</span>
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <!-- Product Details -->
+      <h1><%= @product.name %></h1>
+      <p class="text-muted">SKU: <%= @product.sku %></p>
+      <p class="text-muted">Supplier: <%= @product.supplier_type&.humanize || 'Custom' %></p>
+      
+      <h3 class="text-primary"><%= @product.display_price %></h3>
+      
+      <div class="my-4">
+        <h5>Description</h5>
+        <p><%= @product.description %></p>
+      </div>
+      
+      <!-- Customization Section -->
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Customize This Product</h5>
+        </div>
+        <div class="card-body">
+          <% if user_signed_in? %>
+            <p>Add your custom design, text, or logo to this product.</p>
+            
+            <!-- Placeholder for customization interface -->
+            <div class="customization-area bg-light p-4 mb-3" style="min-height: 200px;">
+              <div class="text-center text-muted">
+                <i class="fas fa-paint-brush fa-3x mb-3"></i>
+                <p>Live 2D Customization Interface</p>
+                <p><small>This will integrate with tui.image-editor for live customization</small></p>
+              </div>
+            </div>
+            
+            <%= form_with model: [@product, @customization], url: save_customization_product_path(@product), local: true do |form| %>
+              <div class="mb-3">
+                <%= form.label :design_data, "Design Notes", class: "form-label" %>
+                <%= form.text_area :design_data, class: "form-control", rows: 3, placeholder: "Describe your customization requirements..." %>
+              </div>
+              
+              <div class="d-grid gap-2">
+                <%= form.submit "Save Customization", class: "btn btn-primary" %>
+              </div>
+            <% end %>
+          <% else %>
+            <p>Please <%= link_to "sign in", new_user_session_path %> to customize this product.</p>
+          <% end %>
+        </div>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="mt-4">
+        <div class="d-grid gap-2">
+          <button class="btn btn-success btn-lg" disabled>
+            Add to Cart (Coming Soon)
+          </button>
+          <button class="btn btn-outline-primary">
+            Request Quote
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Product Features -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <h3>Product Features</h3>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="text-center p-3">
+            <i class="fas fa-palette fa-2x text-primary mb-2"></i>
+            <h5>Live Customization</h5>
+            <p>Design your product in real-time with our 2D editor</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="text-center p-3">
+            <i class="fas fa-robot fa-2x text-primary mb-2"></i>
+            <h5>AI Stitch Estimation</h5>
+            <p>Get accurate embroidery cost estimates powered by AI</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="text-center p-3">
+            <i class="fas fa-save fa-2x text-primary mb-2"></i>
+            <h5>Save Designs</h5>
+            <p>Save your customizations to your account for future orders</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Navigation -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <%= link_to "← Back to Products", products_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+</div>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
