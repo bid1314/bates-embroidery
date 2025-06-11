@@ -5813,3 +5813,50 @@ Processing by HomeController#index as HTML
 Completed 200 OK in 13ms (Views: 10.4ms | ActiveRecord: 2.0ms (6 queries, 0 cached) | GC: 0.5ms)
 
 
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+Started GET "/" for 127.0.0.1 at 2025-06-11 08:07:14 +0000
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+  
+ArgumentError (Invalid route name, already in use: 'root' 
+You may have defined two routes with the same name using the `:as` option, or you may be overriding a route already defined by a resource with the same naming. For the latter, you can restrict the routes created with `resources` as explained here: 
+https://guides.rubyonrails.org/routing.html#restricting-the-routes-created):
+  
+config/routes.rb:27:in `block (2 levels) in <main>'
+config/routes.rb:26:in `block in <main>'
+config/routes.rb:1:in `<main>'
+Started GET "/" for 10.1.0.128 at 2025-06-11 08:07:40 +0000
+Cannot render console from 10.1.0.128! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+  
+ActionController::RoutingError (No route matches [GET] "/"):
+  
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+Started GET "/" for 10.1.0.32 at 2025-06-11 08:07:51 +0000
+Cannot render console from 10.1.0.32! Allowed networks: 127.0.0.0/127.255.255.255, ::1
+DEPRECATION WARNING: Defining enums with keyword arguments is deprecated and will be removed
+in Rails 8.0. Positional arguments should be used instead:
+
+enum :role, {:customer=>0, :b2b_customer=>1, :admin=>2}
+ (called from <class:User> at /workspace/bates-embroidery/app/models/user.rb:12)
+  
+ArgumentError (Before process_action callback :authenticate_spree_user! has not been defined):
+  
+app/controllers/retail/home_controller.rb:2:in `<class:HomeController>'
+app/controllers/retail/home_controller.rb:1:in `<main>'
+Started GET "/" for 127.0.0.1 at 2025-06-11 08:07:58 +0000
+  
+ArgumentError (Before process_action callback :authenticate_spree_user! has not been defined):
+  
+app/controllers/retail/home_controller.rb:2:in `<class:HomeController>'
+app/controllers/retail/home_controller.rb:1:in `<main>'

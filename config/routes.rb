@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   
   # Subdomain-based routing
   constraints subdomain: 'retail' do
-    root 'retail/home#index'
+    root 'retail/home#index', as: :retail_root
     namespace :retail do
       resources :products, only: [:index, :show] do
         member do
@@ -24,7 +24,7 @@ Rails.application.routes.draw do
   end
   
   constraints subdomain: 'b2b' do
-    root 'b2b/home#index'
+    root 'b2b/home#index', as: :b2b_root
     namespace :b2b do
       resources :products, only: [:index, :show] do
         member do
