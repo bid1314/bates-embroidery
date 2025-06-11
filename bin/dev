@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+# Bates Embroidery Development Server Startup Script
+
+set -e
+
+echo "🚀 Starting Bates Embroidery Development Environment..."
+
+# Check if Redis is running
+if ! redis-cli ping > /dev/null 2>&1; then
+  echo "⚠️  Redis is not running. Starting Redis..."
+  if command -v redis-server > /dev/null 2>&1; then
+    redis-server --daemonize yes
+    sleep 2
+  else
+    echo "❌ Redis not found. Please install Redis or start it manually."
+    echo "   Ubuntu/Debian: sudo apt-get install redis-server"
+    echo "   macOS: brew install redis"
+    echo "   Docker: docker run -d -p 6379:6379 redis:7.0.15-alpine"
+    exit 1
+  fi
+fi
+
+# Check if PostgreSQL is accessible
+if ! bundle exec rails runner "ActiveRecord::Base.connection" > /dev/null 2>&1; then
+  echo "⚠️  Database connection failed. Setting up database..."
+  bundle exec rails db:create db:migrate
+fi
+
+# Clean up any existing server processes
+if [ -f tmp/pids/server.pid ]; then
+  echo "🧹 Cleaning up existing server PID..."
+  rm -f tmp/pids/server.pid
+fi
+
+# Kill any existing Rails processes on port 12001
+if command -v lsof > /dev/null 2>&1; then
+  if lsof -ti:12001 > /dev/null 2>&1; then
+    echo "🧹 Killing existing processes on port 12001..."
+    lsof -ti:12001 | xargs kill -9 2>/dev/null || true
+  fi
+fi
+
+echo "✅ Redis is running"
+echo "✅ Database is ready"
+echo "✅ Port 12001 is available"
+
+# Start the Rails server
+echo "🌐 Starting Rails server on http://localhost:12001"
+echo ""
+echo "📍 Access points:"
+echo "   • Main Site: http://localhost:12001"
+echo "   • Retail Store: http://retail.localhost:12001 (requires /etc/hosts setup)"
+echo "   • B2B Store: http://b2b.localhost:12001 (requires /etc/hosts setup)"
+echo "   • Spree Admin: http://localhost:12001/admin"
+echo "   • Sidekiq Dashboard: http://localhost:12001/sidekiq"
+echo ""
+echo "💡 For subdomain testing, add to /etc/hosts:"
+echo "   127.0.0.1 retail.localhost"
+echo "   127.0.0.1 b2b.localhost"
+echo ""
+echo "🛑 Press Ctrl+C to stop the server"
+echo ""
+
+exec bundle exec rails server -b 0.0.0.0 -p 12001

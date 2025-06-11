@@ -94,6 +94,6 @@ Spree.user_class = "Spree::LegacyUser"
             end
 
             if defined?(Devise) && Devise.respond_to?(:parent_controller)
-              Devise.parent_controller = "Spree::StoreController"
-              Devise.parent_mailer = "Spree::BaseMailer"
+              Devise.parent_controller = "ApplicationController"
+              Devise.parent_mailer = "ApplicationMailer"
             end

@@ -1,0 +1,348 @@
+<div class="product-detail" data-product-id="<%= @product.id %>">
+  <div class="row">
+    <!-- Product Images -->
+    <div class="col-md-6">
+      <div class="product-images">
+        <% if @product.images.any? %>
+          <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              <% @product.images.each_with_index do |image, index| %>
+                <div class="carousel-item <%= 'active' if index == 0 %>">
+                  <%= image_tag image.url(:large), class: "d-block w-100 product-main-image", alt: @product.name %>
+                </div>
+              <% end %>
+            </div>
+            <% if @product.images.count > 1 %>
+              <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+              </button>
+            <% end %>
+          </div>
+          
+          <!-- Thumbnail navigation -->
+          <% if @product.images.count > 1 %>
+            <div class="product-thumbnails mt-3">
+              <div class="row">
+                <% @product.images.each_with_index do |image, index| %>
+                  <div class="col-3">
+                    <%= image_tag image.url(:small), 
+                        class: "img-thumbnail thumbnail-nav #{'active' if index == 0}", 
+                        data: { bs_target: "#productCarousel", bs_slide_to: index } %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <img src="https://via.placeholder.com/500x500/f8f9fa/6c757d?text=No+Image" class="img-fluid product-main-image" alt="<%= @product.name %>">
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Product Information -->
+    <div class="col-md-6">
+      <div class="product-info">
+        <h1 class="product-title"><%= @product.name %></h1>
+        
+        <div class="product-price mb-3">
+          <% if @product.variants.any? %>
+            <span class="h3 text-primary">
+              $<%= @product.variants.minimum(:price) %>
+              <% if @product.variants.minimum(:price) != @product.variants.maximum(:price) %>
+                - $<%= @product.variants.maximum(:price) %>
+              <% end %>
+            </span>
+          <% else %>
+            <span class="h3 text-primary">$<%= @product.price %></span>
+          <% end %>
+          <small class="text-muted d-block">Base price (before customization)</small>
+        </div>
+
+        <div class="product-description mb-4">
+          <%= simple_format(@product.description) %>
+        </div>
+
+        <!-- Product Options -->
+        <% if @variants.any? %>
+          <div class="product-options mb-4">
+            <% @product.option_types.each do |option_type| %>
+              <div class="option-group mb-3">
+                <label class="form-label"><%= option_type.presentation %>:</label>
+                <select class="form-select" name="variant_options[<%= option_type.id %>]" data-option-type="<%= option_type.name %>">
+                  <option value="">Select <%= option_type.presentation %></option>
+                  <% option_type.option_values.each do |option_value| %>
+                    <option value="<%= option_value.id %>" data-option-name="<%= option_value.name %>">
+                      <%= option_value.presentation %>
+                    </option>
+                  <% end %>
+                </select>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <!-- Quantity -->
+        <div class="quantity-selector mb-4">
+          <label class="form-label">Quantity:</label>
+          <div class="input-group" style="width: 150px;">
+            <button class="btn btn-outline-secondary" type="button" id="qty-decrease">-</button>
+            <input type="number" class="form-control text-center" id="quantity" value="1" min="1" max="999">
+            <button class="btn btn-outline-secondary" type="button" id="qty-increase">+</button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="product-actions mb-4">
+          <div class="d-grid gap-2">
+            <button class="btn btn-primary btn-lg" id="customize-product-btn">
+              <i class="fas fa-palette me-2"></i>Customize This Product
+            </button>
+            <button class="btn btn-outline-primary" id="add-to-cart-btn">
+              <i class="fas fa-shopping-cart me-2"></i>Add to Cart (No Customization)
+            </button>
+          </div>
+        </div>
+
+        <!-- Product Features -->
+        <div class="product-features">
+          <h6>Product Features:</h6>
+          <ul class="list-unstyled">
+            <li><i class="fas fa-check text-success me-2"></i>High-quality materials</li>
+            <li><i class="fas fa-check text-success me-2"></i>Professional embroidery available</li>
+            <li><i class="fas fa-check text-success me-2"></i>Screen printing options</li>
+            <li><i class="fas fa-check text-success me-2"></i>Multiple color options</li>
+            <li><i class="fas fa-check text-success me-2"></i>Fast turnaround time</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Customization Section -->
+  <div class="row mt-5" id="customization-section" style="display: none;">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0"><i class="fas fa-palette me-2"></i>Product Designer</h4>
+          <small>Create your custom design with our live design tool</small>
+        </div>
+        <div class="card-body p-0">
+          <div id="product-designer-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Details Tabs -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <ul class="nav nav-tabs" id="productTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button">
+            Description
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="specifications-tab" data-bs-toggle="tab" data-bs-target="#specifications" type="button">
+            Specifications
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="customization-tab" data-bs-toggle="tab" data-bs-target="#customization-info" type="button">
+            Customization Options
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="shipping-tab" data-bs-toggle="tab" data-bs-target="#shipping" type="button">
+            Shipping & Returns
+          </button>
+        </li>
+      </ul>
+      
+      <div class="tab-content" id="productTabsContent">
+        <div class="tab-pane fade show active" id="description" role="tabpanel">
+          <div class="p-4">
+            <%= simple_format(@product.description) %>
+          </div>
+        </div>
+        
+        <div class="tab-pane fade" id="specifications" role="tabpanel">
+          <div class="p-4">
+            <h6>Product Specifications</h6>
+            <table class="table table-sm">
+              <tbody>
+                <tr><td><strong>Material:</strong></td><td>100% Cotton (varies by product)</td></tr>
+                <tr><td><strong>Weight:</strong></td><td>6.0 oz (varies by product)</td></tr>
+                <tr><td><strong>Fit:</strong></td><td>Unisex sizing</td></tr>
+                <tr><td><strong>Care:</strong></td><td>Machine wash cold, tumble dry low</td></tr>
+                <tr><td><strong>Origin:</strong></td><td>Imported</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div class="tab-pane fade" id="customization-info" role="tabpanel">
+          <div class="p-4">
+            <h6>Available Customization Options</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <h6><i class="fas fa-cut me-2"></i>Embroidery</h6>
+                <ul>
+                  <li>Logo embroidery</li>
+                  <li>Text embroidery</li>
+                  <li>Multiple thread colors</li>
+                  <li>Various fonts available</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h6><i class="fas fa-print me-2"></i>Screen Printing</h6>
+                <ul>
+                  <li>Single or multi-color prints</li>
+                  <li>Large format designs</li>
+                  <li>Specialty inks available</li>
+                  <li>Bulk order discounts</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="tab-pane fade" id="shipping" role="tabpanel">
+          <div class="p-4">
+            <h6>Shipping Information</h6>
+            <p><strong>Standard Shipping:</strong> 5-7 business days</p>
+            <p><strong>Express Shipping:</strong> 2-3 business days</p>
+            <p><strong>Rush Orders:</strong> Available for additional fee</p>
+            
+            <h6 class="mt-4">Returns & Exchanges</h6>
+            <p>Custom embroidered items are final sale. Non-customized items may be returned within 30 days in original condition.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { ProductDesigner } from 'product_designer';
+
+document.addEventListener('DOMContentLoaded', function() {
+  let designer = null;
+
+  // Customize product button
+  document.getElementById('customize-product-btn').addEventListener('click', function() {
+    const section = document.getElementById('customization-section');
+    if (section.style.display === 'none') {
+      section.style.display = 'block';
+      this.innerHTML = '<i class="fas fa-eye-slash me-2"></i>Hide Designer';
+      
+      // Initialize designer if not already done
+      if (!designer) {
+        const productImage = document.querySelector('.product-main-image').src;
+        designer = new ProductDesigner('product-designer-container', productImage);
+      }
+    } else {
+      section.style.display = 'none';
+      this.innerHTML = '<i class="fas fa-palette me-2"></i>Customize This Product';
+    }
+  });
+
+  // Quantity controls
+  document.getElementById('qty-decrease').addEventListener('click', function() {
+    const qty = document.getElementById('quantity');
+    if (qty.value > 1) {
+      qty.value = parseInt(qty.value) - 1;
+    }
+  });
+
+  document.getElementById('qty-increase').addEventListener('click', function() {
+    const qty = document.getElementById('quantity');
+    qty.value = parseInt(qty.value) + 1;
+  });
+
+  // Add to cart without customization
+  document.getElementById('add-to-cart-btn').addEventListener('click', function() {
+    const productId = document.querySelector('[data-product-id]').dataset.productId;
+    const quantity = document.getElementById('quantity').value;
+
+    fetch(`/cart/add/${productId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify({ quantity: quantity })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        alert('Product added to cart!');
+        // Update cart count
+        const cartCount = document.getElementById('cart-count');
+        if (cartCount) {
+          cartCount.textContent = parseInt(cartCount.textContent) + parseInt(quantity);
+        }
+      } else {
+        alert('Error adding to cart: ' + data.error);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error adding to cart');
+    });
+  });
+
+  // Thumbnail navigation
+  document.querySelectorAll('.thumbnail-nav').forEach(thumb => {
+    thumb.addEventListener('click', function() {
+      document.querySelectorAll('.thumbnail-nav').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+});
+</script>
+
+<style>
+.product-main-image {
+  max-height: 500px;
+  object-fit: contain;
+}
+
+.thumbnail-nav {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.thumbnail-nav:hover {
+  opacity: 0.8;
+}
+
+.thumbnail-nav.active {
+  border-color: #007bff !important;
+  border-width: 2px !important;
+}
+
+.product-actions .btn {
+  font-weight: 500;
+}
+
+.option-group select {
+  max-width: 200px;
+}
+
+.quantity-selector .input-group {
+  max-width: 150px;
+}
+
+#customization-section {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
