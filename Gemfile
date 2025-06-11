@@ -50,7 +50,7 @@ gem "sendgrid-ruby", "~> 6.0"
 gem "kaminari", "~> 1.2"
 
 # Environment Variables
-gem "dotenv-rails", "~> 2.8"
+gem "dotenv-rails", "~> 3.1"
 
 # CORS
 gem "rack-cors", "~> 2.0"
