@@ -58,6 +58,11 @@ gem "rack-cors", "~> 2.0"
 # JSON handling
 gem "oj", "~> 3.0"
 
+# Spree Commerce
+gem 'spree', '~> 5.0.4'
+gem 'spree_auth_devise', '~> 4.6'
+gem 'spree_gateway', '~> 3.11'
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ mswin mswin64 mingw x64_mingw jruby ]
 
@@ -65,7 +70,7 @@ gem "tzinfo-data", platforms: %i[ mswin mswin64 mingw x64_mingw jruby ]
 gem "bootsnap", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-# gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 1.2"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

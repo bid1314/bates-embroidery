@@ -1,4 +1,13 @@
 Rails.application.routes.draw do
+  # This line mounts Spree's routes at the root of your application.
+  # This means, any requests to URLs such as /products, will go to
+  # Spree::ProductsController.
+  # If you would like to change where this engine is mounted, simply change the
+  # :at option to something different.
+  #
+  # We ask that you don't use the :as option here, as Spree relies on it being
+  # the default of "spree".
+  mount Spree::Core::Engine, at: '/'
   devise_for :users
   
   # Root route
@@ -11,6 +20,13 @@ Rails.application.routes.draw do
       post :save_customization
     end
   end
+  
+  # Shopping cart routes
+  get 'cart', to: 'shopping_cart#show'
+  post 'cart/add_item', to: 'shopping_cart#add_item'
+  delete 'cart/remove_item', to: 'shopping_cart#remove_item'
+  patch 'cart/update_quantity', to: 'shopping_cart#update_quantity'
+  delete 'cart/clear', to: 'shopping_cart#clear'
   
   # API routes
   namespace :api do

@@ -129,3 +129,6 @@ puts "Seed data creation completed!"
 puts "Admin login: admin@batesembroidery.com / password123"
 puts "Customer login: customer@example.com / password123"
 puts "B2B Customer login: b2b@company.com / password123"
+
+Spree::Core::Engine.load_seed if defined?(Spree::Core)
+Spree::Auth::Engine.load_seed if defined?(Spree::Auth)
