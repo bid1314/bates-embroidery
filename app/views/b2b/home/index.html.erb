@@ -4,15 +4,15 @@
     <div class="col-md-6">
       <h1 class="display-4 fw-bold text-dark">Professional B2B Solutions</h1>
       <p class="lead">Wholesale pricing, volume discounts, and dedicated support for businesses, event companies, and resellers.</p>
-      <% if user_signed_in? && current_user.b2b_customer? %>
+      <% if spree_current_user && spree_current_user.has_spree_role?('b2b_customer') %>
         <div class="d-flex gap-3">
           <%= link_to "Browse Catalog", "#", class: "btn btn-dark btn-lg" %>
           <%= link_to "Request Quote", "#", class: "btn btn-outline-dark btn-lg" %>
         </div>
       <% else %>
         <div class="d-flex gap-3">
-          <%= link_to "Apply for B2B Account", b2b_register_path, class: "btn btn-dark btn-lg" %>
-          <%= link_to "Login to B2B Portal", b2b_login_path, class: "btn btn-outline-dark btn-lg" %>
+          <%= link_to "Apply for B2B Account", #, class: "btn btn-dark btn-lg" %>
+          <%= link_to "Login to B2B Portal", spree.login_path, class: "btn btn-outline-dark btn-lg" %>
         </div>
       <% end %>
     </div>
@@ -66,7 +66,7 @@
 
 <!-- Pricing Information -->
 <section class="pricing-section mb-5">
-  <% if user_signed_in? && current_user.b2b_customer? %>
+  <% if spree_current_user && spree_current_user.has_spree_role?('b2b_customer') %>
     <!-- Show actual pricing for authenticated B2B users -->
     <h2 class="mb-4">Your B2B Pricing</h2>
     <div class="row">
@@ -134,7 +134,7 @@
               <i class="fas fa-lock fa-2x mb-3"></i>
               <p><strong>Wholesale pricing available</strong></p>
               <p>Login to your approved B2B account to view embroidery pricing.</p>
-              <%= link_to "Login", b2b_login_path, class: "btn btn-dark btn-sm" %>
+              <%= link_to "Login", spree.login_path, class: "btn btn-dark btn-sm" %>
             </div>
           </div>
         </div>
@@ -149,7 +149,7 @@
               <i class="fas fa-lock fa-2x mb-3"></i>
               <p><strong>Wholesale pricing available</strong></p>
               <p>Login to your approved B2B account to view screen printing pricing.</p>
-              <%= link_to "Login", b2b_login_path, class: "btn btn-dark btn-sm" %>
+              <%= link_to "Login", spree.login_path, class: "btn btn-dark btn-sm" %>
             </div>
           </div>
         </div>
@@ -162,10 +162,10 @@
 <section class="featured-products mb-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Popular B2B Products</h2>
-    <% if user_signed_in? && current_user.b2b_customer? %>
+    <% if spree_current_user && spree_current_user.has_spree_role?('b2b_customer') %>
       <%= link_to "View All Products", "#", class: "btn btn-outline-dark" %>
     <% else %>
-      <%= link_to "Login to View Catalog", b2b_login_path, class: "btn btn-outline-dark" %>
+      <%= link_to "Login to View Catalog", spree.login_path, class: "btn btn-outline-dark" %>
     <% end %>
   </div>
   
@@ -183,7 +183,7 @@
             <h6 class="card-title">Professional Polo <%= i + 1 %></h6>
             <p class="card-text text-muted small">65/35 Poly/Cotton, Corporate Colors</p>
             <div class="d-flex justify-content-between align-items-center">
-              <% if user_signed_in? && current_user.b2b_customer? %>
+              <% if spree_current_user && spree_current_user.has_spree_role?('b2b_customer') %>
                 <span class="h6 text-dark mb-0">$18.75</span>
                 <button class="btn btn-dark btn-sm">
                   <i class="fas fa-plus me-1"></i>Add to Quote
@@ -202,7 +202,7 @@
 </section>
 
 <!-- B2B Application CTA -->
-<% unless user_signed_in? && current_user.b2b_customer? %>
+<% unless spree_current_user && spree_current_user.has_spree_role?('b2b_customer') %>
   <section class="application-cta mb-5">
     <div class="card bg-dark text-white">
       <div class="card-body text-center py-5">
@@ -233,8 +233,8 @@
           </div>
         </div>
         <div class="mt-4">
-          <%= link_to "Apply for B2B Account", b2b_register_path, class: "btn btn-light btn-lg me-3" %>
-          <%= link_to "Already Applied? Login", b2b_login_path, class: "btn btn-outline-light btn-lg" %>
+          <%= link_to "Apply for B2B Account", #, class: "btn btn-light btn-lg me-3" %>
+          <%= link_to "Already Applied? Login", spree.login_path, class: "btn btn-outline-light btn-lg" %>
         </div>
       </div>
     </div>

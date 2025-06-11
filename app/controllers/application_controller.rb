@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
 
   def set_current_store
     @current_store = determine_current_store
-    Spree::Config[:current_store] = @current_store if @current_store
+    # Store the current store in instance variable for use in views
   end
 
   def determine_current_store
@@ -59,14 +59,14 @@ class ApplicationController < ActionController::Base
   def require_b2b_access
     return unless current_store_is_b2b?
     
-    unless user_signed_in? && current_spree_user.has_spree_role?('b2b_customer')
+    unless spree_current_user && spree_current_user.has_spree_role?('b2b_customer')
       redirect_to spree.login_path, alert: 'B2B access requires approved wholesale account.'
     end
   end
 
   def hide_pricing_for_unapproved_b2b
     return false unless current_store_is_b2b?
-    return false if user_signed_in? && current_spree_user.has_spree_role?('b2b_customer')
+    return false if spree_current_user && spree_current_user.has_spree_role?('b2b_customer')
     
     true
   end
