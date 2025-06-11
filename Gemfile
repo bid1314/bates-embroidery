@@ -62,6 +62,7 @@ gem "oj", "~> 3.0"
 gem 'spree', '~> 5.0.4'
 gem 'spree_auth_devise', '~> 4.6'
 gem 'spree_gateway', '~> 3.11'
+# Note: spree_backend not compatible with Spree 5.0.4 - using API and custom admin interface
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ mswin mswin64 mingw x64_mingw jruby ]
