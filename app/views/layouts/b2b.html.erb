@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bates Embroidery - B2B Portal</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+      .b2b-header {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+      }
+      .b2b-nav {
+        background-color: #ecf0f1;
+        border-bottom: 2px solid #2c3e50;
+      }
+      .b2b-footer {
+        background-color: #2c3e50;
+        color: white;
+      }
+      .pricing-hidden {
+        background-color: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        padding: 10px;
+        text-align: center;
+        color: #6c757d;
+      }
+    </style>
+  </head>
+
+  <body class="b2b-store">
+    <!-- B2B Header -->
+    <header class="b2b-header py-3">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-3">
+            <%= link_to b2b_root_path, class: "text-white text-decoration-none" do %>
+              <h2 class="mb-0"><i class="fas fa-building me-2"></i>Bates Embroidery</h2>
+              <small>B2B Portal</small>
+            <% end %>
+          </div>
+          <div class="col-md-6">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search products...">
+              <button class="btn btn-light" type="button">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col-md-3 text-end">
+            <% if user_signed_in? && current_user.b2b_customer? %>
+              <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  <i class="fas fa-user-tie me-1"></i><%= current_user.email %>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><%= link_to "My Account", "#", class: "dropdown-item" %></li>
+                  <li><%= link_to "My Orders", "#", class: "dropdown-item" %></li>
+                  <li><%= link_to "My Brand", "#", class: "dropdown-item" %></li>
+                  <li><%= link_to "My Logos", "#", class: "dropdown-item" %></li>
+                  <li><%= link_to "Pricing Lists", "#", class: "dropdown-item" %></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><%= link_to "Logout", destroy_user_session_path, method: :delete, class: "dropdown-item" %></li>
+                </ul>
+              </div>
+            <% else %>
+              <%= link_to "B2B Login", b2b_login_path, class: "btn btn-light me-2" %>
+              <%= link_to "Apply for B2B", b2b_register_path, class: "btn btn-outline-light" %>
+            <% end %>
+            <a href="#" class="btn btn-warning ms-2">
+              <i class="fas fa-shopping-cart"></i> Cart (<span id="cart-count">0</span>)
+            </a>
+            <a href="#" class="btn btn-info ms-1">
+              <i class="fas fa-quote-left"></i> RFQ
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- B2B Navigation -->
+    <nav class="b2b-nav py-2">
+      <div class="container">
+        <ul class="nav nav-pills">
+          <li class="nav-item">
+            <%= link_to "Home", b2b_root_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Products", "#", class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Pricing Lists", "#", class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Custom Design", "#", class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Stitch Estimator", "#", class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Resources", "#", class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Support", "#", class: "nav-link" %>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="py-4">
+      <div class="container">
+        <% unless user_signed_in? && current_user.b2b_customer? %>
+          <div class="alert alert-warning" role="alert">
+            <i class="fas fa-lock me-2"></i>
+            <strong>B2B Pricing Available</strong> - 
+            <%= link_to "Login", b2b_login_path, class: "alert-link" %> to your approved B2B account to view wholesale pricing, or 
+            <%= link_to "apply for a B2B account", b2b_register_path, class: "alert-link" %> to get started.
+          </div>
+        <% end %>
+
+        <% if notice %>
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= notice %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        <% end %>
+        
+        <% if alert %>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= alert %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        <% end %>
+
+        <%= yield %>
+      </div>
+    </main>
+
+    <!-- B2B Footer -->
+    <footer class="b2b-footer py-5 mt-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-3">
+            <h5>Bates Embroidery B2B</h5>
+            <p>Professional embroidery and printing services for businesses, event companies, and resellers.</p>
+          </div>
+          <div class="col-md-3">
+            <h6>B2B Services</h6>
+            <ul class="list-unstyled">
+              <li><%= link_to "Wholesale Pricing", "#", class: "text-light" %></li>
+              <li><%= link_to "Volume Discounts", "#", class: "text-light" %></li>
+              <li><%= link_to "Custom Branding", "#", class: "text-light" %></li>
+              <li><%= link_to "Drop Shipping", "#", class: "text-light" %></li>
+            </ul>
+          </div>
+          <div class="col-md-3">
+            <h6>Support</h6>
+            <ul class="list-unstyled">
+              <li><%= link_to "Account Setup", "#", class: "text-light" %></li>
+              <li><%= link_to "Order Tracking", "#", class: "text-light" %></li>
+              <li><%= link_to "Technical Support", "#", class: "text-light" %></li>
+              <li><%= link_to "Account Manager", "#", class: "text-light" %></li>
+            </ul>
+          </div>
+          <div class="col-md-3">
+            <h6>Account Access</h6>
+            <p>
+              <strong>Need retail pricing?</strong><br>
+              <%= link_to "Visit our Retail Store", "http://retail.batesembroidery.com", class: "text-warning" %>
+            </p>
+            <p>
+              <strong>Questions about B2B?</strong><br>
+              <i class="fas fa-phone me-1"></i> 1-800-BATES-B2B<br>
+              <i class="fas fa-envelope me-1"></i> b2b@batesembroidery.com
+            </p>
+          </div>
+        </div>
+        <hr class="my-4">
+        <div class="text-center">
+          <p>&copy; 2025 Bates Embroidery B2B Portal. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

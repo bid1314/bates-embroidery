@@ -10,8 +10,36 @@ Rails.application.routes.draw do
   mount Spree::Core::Engine, at: '/'
   devise_for :users
   
-  # Root route
-  root "home#index"
+  # Subdomain-based routing
+  constraints subdomain: 'retail' do
+    root 'retail/home#index'
+    namespace :retail do
+      resources :products, only: [:index, :show] do
+        member do
+          get :customize
+          post :save_customization
+        end
+      end
+    end
+  end
+  
+  constraints subdomain: 'b2b' do
+    root 'b2b/home#index'
+    namespace :b2b do
+      resources :products, only: [:index, :show] do
+        member do
+          get :customize
+          post :save_customization
+        end
+      end
+      get 'pricing', to: 'pricing#index'
+      get 'account/apply', to: 'account#apply'
+      post 'account/submit_application', to: 'account#submit_application'
+    end
+  end
+  
+  # Default root route (fallback to retail)
+  root "retail/home#index"
   
   # Product routes
   resources :products, only: [:index, :show] do
