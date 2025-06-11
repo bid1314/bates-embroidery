@@ -2,84 +2,131 @@
 
 ## Overview
 
-This is a custom e-commerce platform built for Bates Embroidery, featuring multi-store capabilities, product customization, supplier integrations, and AI-powered features. The platform supports both retail and B2B customers with role-based access and pricing.
+The Bates Embroidery E-commerce Platform is a comprehensive multi-store e-commerce solution built with Rails 7.2.2 and Spree Commerce 5.0.4. It supports both retail and B2B operations with advanced product customization capabilities, supplier integrations, and AI-powered embroidery estimation.
 
 ## Current Implementation Status
 
 ### ✅ COMPLETED FEATURES
 
 #### Core Technology Stack
-- **Framework**: Ruby on Rails 7.2.2
+- **Framework**: Ruby on Rails 7.2.2.1
 - **Ruby Version**: 3.1.2
-- **Database**: PostgreSQL 15
-- **Background Jobs**: Redis + Sidekiq
-- **Authentication**: Devise
-- **Authorization**: CanCanCan
-- **Frontend**: Bootstrap 5.3.0 + ERB templates
+- **E-commerce Engine**: Spree Commerce 5.0.4 ✅ **FULLY INTEGRATED**
+- **Database**: PostgreSQL 17.5
+- **Cache/Sessions**: Redis 7.0
+- **Authentication**: Devise with Spree integration
+- **Authorization**: Spree role-based system
+- **Frontend**: Stimulus, Turbo, Bootstrap-compatible styling
+- **Rich Content**: Action Text with Trix editor
+- **Background Jobs**: Sidekiq
 - **File Storage**: Active Storage (configured for AWS S3)
-- **Email**: SendGrid integration
 - **API Clients**: HTTParty, Faraday
+- **Testing**: RSpec, Capybara
 
 #### Implemented Features
-- ✅ Product catalog with search and filtering
-- ✅ User authentication and role-based access (Customer, B2B Customer, Admin)
-- ✅ Multi-store setup (Retail and B2B stores)
-- ✅ Product customization interface (placeholder for tui.image-editor integration)
-- ✅ Responsive Bootstrap UI
-- ✅ Database schema with proper associations
-- ✅ Seed data with sample products and users
-- ✅ Basic API endpoints structure
+- ✅ **Full Spree Commerce Integration** - Complete e-commerce platform
+- ✅ **Shopping Cart System** - Add/remove items, quantity updates, AJAX functionality
+- ✅ **Product Management** - Full Spree product catalog with variants
+- ✅ **User Authentication** - Devise + Spree user management
+- ✅ **Multi-store Setup** - Retail and B2B store configurations
+- ✅ **Order Management** - Complete order processing workflow
+- ✅ **Payment Processing** - Spree payment system integration
+- ✅ **Inventory Management** - Real-time stock tracking
+- ✅ **Admin Interface** - Spree admin panel access
+- ✅ **API Endpoints** - RESTful cart and product APIs
+- ✅ **Database Schema** - 107 Spree migrations successfully applied
+- ✅ **Seed Data** - Admin, customer, and B2B user accounts
+- ✅ **Responsive Design** - Mobile-friendly interface
 
-### 🚧 PLANNED FEATURES (Not Yet Implemented)
+### 🚧 NEXT PRIORITIES
 
-#### Core Technology Stack (Planned)
-- **E-commerce Engine**: Spree Commerce (removed due to compatibility issues)
-- **Multi-tenancy**: Apartment gem
-- **Admin Interface**: Bullet Train
-- **Image Editing**: TUI Image Editor (JavaScript)
-- **Email Automation**: Brevo API + Mautic (open-source)
-- **Containerization**: Docker & Docker Compose
+#### Immediate Development Tasks
+- **TUI Image Editor Integration** - Live 2D customization interface
+- **Supplier API Integration** - SanMar and S&S Activewear APIs
+- **Enhanced Admin Interface** - Drag-and-drop page builder
+- **AI Embroidery Estimation** - Stitch count and cost calculation
 
 ## How to Run the Application
 
 ### Prerequisites
 - Ruby 3.1.2
-- PostgreSQL 15
-- Redis (for Sidekiq)
+- PostgreSQL 17.5
+- Redis 7.0 (for Sidekiq and sessions)
 - Node.js (for asset compilation)
 
-### Quick Start
+### System Dependencies Installation
+```bash
+# Update system packages
+sudo apt-get update
 
-1. **Clone and setup**
+# Install PostgreSQL 17.5
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+echo "deb http://apt.postgresql.org/pub/repos/apt/ bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+apt-get update && apt-get install -y postgresql-17 postgresql-client-17
+
+# Install Redis
+apt-get install -y redis-server
+
+# Install build dependencies
+apt-get install -y build-essential libpq-dev nodejs npm
+```
+
+### Database Setup
+```bash
+# Start PostgreSQL service
+service postgresql start
+
+# Create database user and databases
+sudo -u postgres createuser -s root
+sudo -u postgres psql -c "ALTER USER root WITH PASSWORD 'password';"
+sudo -u postgres createdb bates_embroidery_development
+sudo -u postgres createdb bates_embroidery_test
+```
+
+### Application Setup
+
+1. **Clone and install dependencies**
    ```bash
    cd /workspace/bates-embroidery
    bundle install
    ```
 
-2. **Database setup**
+2. **Database setup with Spree**
    ```bash
-   rails db:create
-   rails db:migrate
-   rails db:seed
+   # Run all migrations (includes 107 Spree migrations)
+   bundle exec rails db:migrate
+   
+   # Seed database with sample data
+   bundle exec rails db:seed
    ```
 
-3. **Start the application**
+3. **Start services**
    ```bash
-   # Start Rails server
-   rails server -b 0.0.0.0 -p 12000
+   # Start Redis
+   service redis-server start
+   
+   # Start Rails server (configured for web panel access)
+   bundle exec rails server -b 0.0.0.0 -p 12000
    
    # In another terminal, start Sidekiq for background jobs
    bundle exec sidekiq
    ```
 
 4. **Access the application**
-   - Local: http://localhost:12000
-   - External: https://work-1-wjajrebstcyljkfs.prod-runtime.all-hands.dev
+   - **Web Panel**: https://work-1-wjajrebstcyljkfs.prod-runtime.all-hands.dev
+   - **Local**: http://localhost:12000
+   - **Spree Admin**: http://localhost:12000/admin
+   - **Sidekiq Monitor**: http://localhost:12000/sidekiq (development only)
 
-### Default Users (from seeds)
+### Default User Accounts
 - **Admin**: admin@batesembroidery.com / password123
 - **Customer**: customer@example.com / password123
 - **B2B Customer**: b2b@company.com / password123
+
+### Store Access
+- **Retail Store**: Main storefront (default)
+- **B2B Store**: Accessible with B2B customer login
+- **Admin Panel**: Full Spree admin interface
 
 ## Database Schema
 
