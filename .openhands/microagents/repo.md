@@ -1,45 +1,93 @@
-# Bates Embroidery E-commerce Platform
+# Bates Embroidery - Custom E-commerce Platform
 
-## Repository Overview
+## Overview
 
-This is a custom e-commerce platform built with Ruby on Rails and Spree Commerce, designed specifically for Bates Embroidery's multi-store business model. The platform supports both retail and B2B wholesale operations with advanced product customization capabilities.
+Bates Embroidery is a comprehensive multi-store e-commerce platform built with Ruby on Rails and Spree Commerce. The platform supports both retail and B2B wholesale operations with advanced product customization capabilities, live 2D design tools, and AI-based embroidery estimation.
 
-## Architecture & Technology Stack
+## Architecture
 
-### Core Technologies
-- **Backend**: Ruby on Rails 7.2.2.1
-- **E-commerce Engine**: Spree Commerce 5.0.4
-- **Database**: PostgreSQL 17.5
-- **Cache/Jobs**: Redis 7.0.15 + Sidekiq 7.0
-- **Authentication**: Devise + Spree Auth
-- **Testing**: RSpec + FactoryBot + Capybara
-- **Frontend**: Stimulus + Turbo + Importmap (no Node.js build step)
-- **Styling**: CSS with Rails asset pipeline
-- **File Storage**: AWS S3 (configurable)
-- **Email**: Brevo API / SendGrid
-- **Background Jobs**: Sidekiq
+### Multi-Store Setup
+- **Retail Store**: `retail.batesembroidery.com` - Open pricing for all visitors
+- **B2B Store**: `b2b.batesembroidery.com` - Pricing visible only to approved wholesale customers
 
-### Multi-Store Architecture
-The platform implements a sophisticated multi-store system using subdomain-based routing:
+### Key Features
+- **Live 2D Product Customization**: Real-time design overlay with text, logos, and graphics
+- **AI-Based Stitch Estimation**: Automated embroidery cost calculation
+- **Role-Based Access Control**: Separate authentication flows for retail and B2B customers
+- **Supplier API Integration**: Ready for SanMar and S&S Activewear integration
+- **Production Workflow**: Printavo-compatible order management system
 
-- **Retail Store** (`retail.batesembroidery.com`): Public e-commerce with open pricing
-- **B2B Store** (`b2b.batesembroidery.com`): Wholesale portal with role-based access control
+## Technology Stack
 
-Each store has:
-- Separate product catalogs and pricing
-- Independent user authentication flows
-- Customized checkout processes
-- Store-specific branding and layouts
+### Core Framework
+- **Ruby on Rails 7.2.2.1**: Main application framework
+- **Spree Commerce 5.0.4**: E-commerce engine
+- **PostgreSQL**: Primary database
+- **Devise**: Authentication system
+
+### Frontend
+- **Bootstrap 5.3.0**: UI framework
+- **Font Awesome 6.0.0**: Icons
+- **TUI Image Editor**: Live product customization (placeholder implementation)
+- **Turbo**: SPA-like navigation
+
+### Development Tools
+- **RSpec**: Testing framework
+- **FactoryBot**: Test data generation
+- **Capybara**: Integration testing
+- **Rubocop**: Code linting
+- **Bundler**: Dependency management
+
+## Project Structure
+
+```
+bates-embroidery/
+├── app/
+│   ├── controllers/
+│   │   ├── application_controller.rb      # Base controller with store context
+│   │   ├── retail/                        # Retail store controllers
+│   │   │   ├── home_controller.rb
+│   │   │   └── products_controller.rb
+│   │   └── b2b/                          # B2B store controllers
+│   │       ├── home_controller.rb
+│   │       ├── products_controller.rb
+│   │       └── sessions_controller.rb
+│   ├── models/
+│   │   ├── user.rb                       # Integrated with Spree
+│   │   └── customization.rb              # Product customization data
+│   ├── views/
+│   │   ├── layouts/
+│   │   │   ├── retail.html.erb           # Retail store layout
+│   │   │   └── b2b.html.erb              # B2B store layout
+│   │   ├── retail/                       # Retail store views
+│   │   └── b2b/                          # B2B store views
+│   └── javascript/
+│       └── product_designer.js           # Live customization module
+├── config/
+│   ├── routes.rb                         # Multi-store routing
+│   ├── database.yml                      # Database configuration
+│   └── initializers/
+│       ├── spree.rb                      # Spree configuration
+│       └── devise.rb                     # Authentication setup
+├── db/
+│   ├── migrate/                          # Database migrations
+│   └── seeds.rb                          # Sample data
+├── spec/                                 # Test suite
+├── .github/
+│   └── workflows/
+│       └── ci.yml                        # CI/CD pipeline
+└── Gemfile                               # Dependencies
+```
 
 ## How to Run the Code
 
 ### Prerequisites
-- Ruby 3.1.2+
-- PostgreSQL 17.5+
-- Redis 7.0.15+
+- Ruby 3.1.0 or higher
+- PostgreSQL 12+
+- Node.js 16+ (for asset compilation)
 - Git
 
-### Quick Start
+### Installation
 
 #### 1. Clone Repository
 ```bash
@@ -49,36 +97,85 @@ cd bates-embroidery
 
 #### 2. Install Dependencies
 ```bash
-# Install Ruby gems
 bundle install
 ```
 
-#### 3. Environment Setup
-Create `.env` file:
+#### 3. Setup Database
+```bash
+# Create and setup database
+bundle exec rails db:create
+bundle exec rails db:migrate
+
+# Load sample data
+bundle exec rails db:seed
+```
+
+#### 4. Install Spree
+```bash
+# Generate Spree configuration
+bundle exec rails generate spree:install --user_class=Spree::User
+
+# Create sample stores and products
+bundle exec rails runner "
+  # Create retail store
+  retail_store = Spree::Store.find_or_create_by(code: 'retail') do |store|
+    store.name = 'Bates Embroidery - Retail'
+    store.url = 'retail.batesembroidery.com'
+    store.mail_from_address = 'orders@batesembroidery.com'
+    store.default_currency = 'USD'
+    store.default = true
+  end
+  
+  # Create B2B store
+  b2b_store = Spree::Store.find_or_create_by(code: 'b2b') do |store|
+    store.name = 'Bates Embroidery - B2B Wholesale'
+    store.url = 'b2b.batesembroidery.com'
+    store.mail_from_address = 'wholesale@batesembroidery.com'
+    store.default_currency = 'USD'
+    store.default = false
+  end
+"
+```
+
+### Running the Application
+
+#### Development Server
+```bash
+# Start the Rails server
+bundle exec rails server -p 3000
+
+# Or with specific binding for containers
+bundle exec rails server -p 3000 -b 0.0.0.0
+```
+
+#### Access Points
+- **Retail Store**: http://localhost:3000 (or with retail subdomain)
+- **B2B Store**: http://localhost:3000 (with b2b subdomain routing)
+- **Spree Admin**: http://localhost:3000/admin
+
+#### Default Credentials
+- **Admin User**: admin@example.com / spree123
+- **Test Retail User**: customer@example.com / password
+- **Test B2B User**: wholesale@example.com / password
+
+### Environment Variables
 ```bash
 # Database
-DATABASE_URL=postgresql://username:password@localhost:5432/bates_embroidery_development
+DATABASE_URL=postgresql://user:password@localhost/bates_embroidery_development
 
-# Redis
-REDIS_URL=redis://localhost:6379/0
+# Authentication
+DEVISE_SECRET_KEY=your_secret_key
 
-# Rails
-RAILS_ENV=development
-SECRET_KEY_BASE=your_secret_key_here
+# External APIs
+SANMARS_API_KEY=your_sanmars_key
+SS_ACTIVEWEAR_API_KEY=your_ss_key
+BREVO_API_KEY=your_brevo_key
 
-# Email APIs
-BREVO_API_KEY=your_brevo_api_key
-SENDGRID_API_KEY=your_sendgrid_api_key
-
-# Supplier APIs
-SANMAR_API_KEY=your_sanmar_api_key
-SS_ACTIVEWEAR_API_KEY=your_ss_activewear_api_key
-
-# AWS S3 (optional)
-AWS_ACCESS_KEY_ID=your_aws_access_key
-AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+# File Storage (Production)
+AWS_ACCESS_KEY_ID=your_aws_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret
 AWS_REGION=us-east-1
-AWS_S3_BUCKET=your-bucket-name
+AWS_BUCKET=your-bucket-name
 ```
 
 #### 4. Database Setup
