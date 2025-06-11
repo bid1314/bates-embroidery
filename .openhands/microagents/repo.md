@@ -1,8 +1,173 @@
 # Bates Embroidery E-commerce Platform
 
-## Overview
+## Repository Overview
 
-The Bates Embroidery E-commerce Platform is a comprehensive multi-store e-commerce solution built with Rails 7.2.2 and Spree Commerce 5.0.4. It supports both retail and B2B operations with advanced product customization capabilities, supplier integrations, and AI-powered embroidery estimation.
+This is a custom e-commerce platform built with Ruby on Rails and Spree Commerce, designed specifically for Bates Embroidery's multi-store business model. The platform supports both retail and B2B wholesale operations with advanced product customization capabilities.
+
+## Architecture & Technology Stack
+
+### Core Technologies
+- **Backend**: Ruby on Rails 7.2.2.1
+- **E-commerce Engine**: Spree Commerce 5.0.4
+- **Database**: PostgreSQL 17.5
+- **Cache/Jobs**: Redis 7.0.15 + Sidekiq 7.0
+- **Authentication**: Devise + Spree Auth
+- **Testing**: RSpec + FactoryBot + Capybara
+- **Frontend**: Stimulus + Turbo + Importmap (no Node.js build step)
+- **Styling**: CSS with Rails asset pipeline
+- **File Storage**: AWS S3 (configurable)
+- **Email**: Brevo API / SendGrid
+- **Background Jobs**: Sidekiq
+
+### Multi-Store Architecture
+The platform implements a sophisticated multi-store system using subdomain-based routing:
+
+- **Retail Store** (`retail.batesembroidery.com`): Public e-commerce with open pricing
+- **B2B Store** (`b2b.batesembroidery.com`): Wholesale portal with role-based access control
+
+Each store has:
+- Separate product catalogs and pricing
+- Independent user authentication flows
+- Customized checkout processes
+- Store-specific branding and layouts
+
+## How to Run the Code
+
+### Prerequisites
+- Ruby 3.1.2+
+- PostgreSQL 17.5+
+- Redis 7.0.15+
+- Git
+
+### Quick Start
+
+#### 1. Clone Repository
+```bash
+git clone https://github.com/bid1314/bates-embroidery.git
+cd bates-embroidery
+```
+
+#### 2. Install Dependencies
+```bash
+# Install Ruby gems
+bundle install
+```
+
+#### 3. Environment Setup
+Create `.env` file:
+```bash
+# Database
+DATABASE_URL=postgresql://username:password@localhost:5432/bates_embroidery_development
+
+# Redis
+REDIS_URL=redis://localhost:6379/0
+
+# Rails
+RAILS_ENV=development
+SECRET_KEY_BASE=your_secret_key_here
+
+# Email APIs
+BREVO_API_KEY=your_brevo_api_key
+SENDGRID_API_KEY=your_sendgrid_api_key
+
+# Supplier APIs
+SANMAR_API_KEY=your_sanmar_api_key
+SS_ACTIVEWEAR_API_KEY=your_ss_activewear_api_key
+
+# AWS S3 (optional)
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_REGION=us-east-1
+AWS_S3_BUCKET=your-bucket-name
+```
+
+#### 4. Database Setup
+```bash
+# Create and migrate database
+bundle exec rails db:create
+bundle exec rails db:migrate
+bundle exec rails db:seed
+
+# Install Spree (if needed)
+bundle exec rails generate spree:install --user_class=Spree::User
+bundle exec rails generate spree:auth:install
+bundle exec rails generate spree_gateway:install
+```
+
+#### 5. Start Services
+
+**Option A: Manual Start**
+```bash
+# Start Redis
+redis-server
+
+# Start Rails server
+bundle exec rails server -b 0.0.0.0 -p 12001
+
+# Start background jobs (separate terminal)
+bundle exec sidekiq
+```
+
+**Option B: Using Development Script**
+```bash
+# All-in-one development server
+./bin/dev
+```
+
+**Option C: Using Docker**
+```bash
+# Start services only (PostgreSQL + Redis)
+docker-compose -f docker-compose.dev.yml up -d
+
+# Or full Docker setup
+docker-compose up
+```
+
+### Access Points
+
+#### Local Development
+- **Main Site**: http://localhost:12001
+- **Spree Admin**: http://localhost:12001/admin
+- **Sidekiq Dashboard**: http://localhost:12001/sidekiq
+
+#### Subdomain Testing
+Add to `/etc/hosts`:
+```
+127.0.0.1 retail.localhost
+127.0.0.1 b2b.localhost
+```
+
+Then access:
+- **Retail Store**: http://retail.localhost:12001
+- **B2B Store**: http://b2b.localhost:12001
+
+### Testing
+
+```bash
+# Run all tests
+bundle exec rspec
+
+# Run specific test suites
+bundle exec rspec spec/controllers/
+bundle exec rspec spec/models/
+bundle exec rspec spec/requests/
+
+# Run with coverage
+COVERAGE=true bundle exec rspec
+```
+
+### Code Quality
+
+```bash
+# Run RuboCop linting
+bundle exec rubocop
+
+# Run security scan
+bundle exec brakeman
+
+# Auto-fix style issues
+bundle exec rubocop -a
+```
 
 ## Current Implementation Status
 

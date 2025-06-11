@@ -1,5 +1,4 @@
 class Retail::HomeController < ApplicationController
-  skip_before_action :authenticate_spree_user!, only: [:index]
   
   def index
     @featured_products = Spree::Product.available.limit(8)

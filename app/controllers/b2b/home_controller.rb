@@ -1,5 +1,4 @@
 class B2b::HomeController < ApplicationController
-  skip_before_action :authenticate_spree_user!, only: [:index]
   before_action :set_b2b_context
   
   def index
@@ -44,6 +43,6 @@ class B2b::HomeController < ApplicationController
   
   def set_b2b_context
     @is_b2b_store = true
-    @show_pricing = user_signed_in? && current_spree_user.has_spree_role?('b2b_customer')
+    @show_pricing = user_signed_in? && current_user.has_spree_role?('b2b_customer')
   end
 end

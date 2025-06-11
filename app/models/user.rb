@@ -4,6 +4,9 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  # Spree integration
+  include Spree::UserMethods if defined?(Spree::UserMethods)
+
   # Associations
   has_many :customizations, dependent: :destroy
   has_many :orders, dependent: :destroy
@@ -16,6 +19,18 @@ class User < ApplicationRecord
   
   # Callbacks
   after_initialize :set_default_role, if: :new_record?
+  
+  # Spree role methods
+  def has_spree_role?(role_name)
+    case role_name.to_s
+    when 'admin'
+      admin?
+    when 'b2b_customer'
+      b2b_customer?
+    else
+      customer?
+    end
+  end
   
   private
   

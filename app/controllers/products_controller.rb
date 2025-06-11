@@ -9,17 +9,17 @@ class ProductsController < ApplicationController
 
   def show
     @variants = @product.variants.includes(:images)
-    @customization = current_spree_user&.customizations&.find_by(product: @product) || Customization.new
+    @customization = current_user&.customizations&.find_by(product: @product) || Customization.new
   end
   
   def customize
-    @customization = current_spree_user&.customizations&.find_by(product: @product) || Customization.new
+    @customization = current_user&.customizations&.find_by(product: @product) || Customization.new
     render layout: 'customization'
   end
   
   def save_customization
     if user_signed_in?
-      @customization = current_spree_user.customizations.find_or_initialize_by(product: @product)
+      @customization = current_user.customizations.find_or_initialize_by(product: @product)
       
       if @customization.update(customization_params)
         render json: { success: true, message: 'Customization saved successfully' }

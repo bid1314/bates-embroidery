@@ -1,13 +1,6 @@
 Rails.application.routes.draw do
-  # This line mounts Spree's routes at the root of your application.
-  # This means, any requests to URLs such as /products, will go to
-  # Spree::ProductsController.
-  # If you would like to change where this engine is mounted, simply change the
-  # :at option to something different.
-  #
-  # We ask that you don't use the :as option here, as Spree relies on it being
-  # the default of "spree".
-  mount Spree::Core::Engine, at: '/'
+  # Mount Spree at /admin for backend management
+  mount Spree::Core::Engine, at: '/admin'
   devise_for :users
   
   # Subdomain-based routing
@@ -26,6 +19,8 @@ Rails.application.routes.draw do
   constraints subdomain: 'b2b' do
     root 'b2b/home#index', as: :b2b_root
     namespace :b2b do
+      get 'login', to: 'home#login', as: :login
+      get 'register', to: 'home#register', as: :register
       resources :products, only: [:index, :show] do
         member do
           get :customize
