@@ -1,0 +1,227 @@
+<% content_for :javascript do %>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize TUI Image Editor
+  let imageEditor;
+  let currentColor = '#000000';
+  let isEditorActive = false;
+  
+  // Initialize the image editor when design area is clicked
+  document.getElementById('design-area').addEventListener('click', function() {
+    if (!isEditorActive) {
+      initializeEditor();
+    }
+  });
+  
+  function initializeEditor() {
+    const container = document.getElementById('tui-image-editor');
+    container.style.display = 'block';
+    
+    // Hide the design overlay
+    document.getElementById('design-area').style.display = 'none';
+    
+    imageEditor = new tui.ImageEditor(container, {
+      includeUI: {
+        loadImage: {
+          path: '<%= @product.images.any? ? @product.images.first.url(:large) : "" %>',
+          name: '<%= @product.name %>'
+        },
+        theme: {
+          'common.bi.image': 'https://uicdn.toast.com/toastui/img/tui-image-editor-bi.png',
+          'common.bisize.width': '251px',
+          'common.bisize.height': '21px',
+          'common.backgroundImage': 'none',
+          'common.backgroundColor': '#f3f4f6',
+          'common.border': '1px solid #333'
+        },
+        menu: ['text', 'filter', 'draw'],
+        initMenu: 'text',
+        uiSize: {
+          width: '100%',
+          height: '600px'
+        },
+        menuBarPosition: 'bottom'
+      },
+      cssMaxWidth: 1000,
+      cssMaxHeight: 600,
+      usageStatistics: false
+    });
+    
+    isEditorActive = true;
+    
+    // Load existing customization if available
+    <% if @customization.design_data.present? %>
+      try {
+        const designData = JSON.parse('<%= @customization.design_data.html_safe %>');
+        imageEditor.loadImageFromURL(designData.imageUrl, 'CustomizedProduct');
+      } catch (e) {
+        console.log('No previous customization data');
+      }
+    <% end %>
+  }
+  
+  // Text tools
+  document.getElementById('add-text').addEventListener('click', function() {
+    if (imageEditor) {
+      const text = document.getElementById('text-input').value || 'Sample Text';
+      const fontSize = document.getElementById('font-size').value;
+      
+      imageEditor.addText(text, {
+        styles: {
+          fontSize: parseInt(fontSize),
+          fill: currentColor,
+          fontFamily: 'Arial'
+        }
+      });
+    }
+  });
+  
+  // Font size slider
+  document.getElementById('font-size').addEventListener('input', function() {
+    const value = this.value;
+    this.nextElementSibling.textContent = value + 'px';
+  });
+  
+  // Color picker
+  document.querySelectorAll('.color-swatch').forEach(function(swatch) {
+    swatch.addEventListener('click', function() {
+      // Remove active class from all swatches
+      document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+      
+      // Add active class to clicked swatch
+      this.classList.add('active');
+      
+      // Update current color
+      currentColor = this.dataset.color;
+    });
+  });
+  
+  // Custom color picker
+  document.getElementById('custom-color').addEventListener('change', function() {
+    currentColor = this.value;
+    
+    // Remove active class from all swatches
+    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+  });
+  
+  // Logo upload
+  document.getElementById('upload-logo').addEventListener('click', function() {
+    document.getElementById('logo-upload').click();
+  });
+  
+  document.getElementById('logo-upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file && imageEditor) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        imageEditor.addImageObject(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  
+  // Clear design
+  document.getElementById('clear-design').addEventListener('click', function() {
+    if (imageEditor && confirm('Are you sure you want to clear the design?')) {
+      imageEditor.clearObjects();
+    }
+  });
+  
+  // Reset view
+  document.getElementById('reset-view').addEventListener('click', function() {
+    if (imageEditor) {
+      imageEditor.resetZoom();
+    }
+  });
+  
+  // Calculate stitches (AI estimation placeholder)
+  document.getElementById('calculate-stitches').addEventListener('click', function() {
+    if (imageEditor) {
+      // Simulate AI stitch calculation
+      const objects = imageEditor.getObjectProperties();
+      let estimatedStitches = 0;
+      
+      // Simple estimation based on object count and complexity
+      objects.forEach(function(obj) {
+        if (obj.type === 'text') {
+          estimatedStitches += obj.text.length * 150; // ~150 stitches per character
+        } else if (obj.type === 'image') {
+          estimatedStitches += 5000; // Base stitches for images
+        }
+      });
+      
+      // Update display
+      document.getElementById('stitch-count').textContent = estimatedStitches.toLocaleString();
+      
+      // Calculate cost (example: $0.35 per 1000 stitches)
+      const cost = (estimatedStitches / 1000) * 0.35;
+      document.getElementById('estimated-cost').textContent = '$' + cost.toFixed(2);
+    }
+  });
+  
+  // Save design
+  document.getElementById('save-design').addEventListener('click', function() {
+    if (imageEditor) {
+      const designData = {
+        imageUrl: imageEditor.toDataURL(),
+        objects: imageEditor.getObjectProperties(),
+        timestamp: new Date().toISOString()
+      };
+      
+      // Save to server
+      fetch('<%= save_customization_product_path(@product) %>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          customization: {
+            design_data: JSON.stringify(designData),
+            preview_image: imageEditor.toDataURL(),
+            notes: 'Customized via TUI Image Editor'
+          }
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Design saved successfully!');
+        } else {
+          alert('Failed to save design: ' + (data.errors ? data.errors.join(', ') : data.message));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to save design. Please try again.');
+      });
+    }
+  });
+  
+  // Add to cart
+  document.getElementById('add-to-cart').addEventListener('click', function() {
+    if (imageEditor) {
+      // First save the design, then add to cart
+      const designData = {
+        imageUrl: imageEditor.toDataURL(),
+        objects: imageEditor.getObjectProperties(),
+        timestamp: new Date().toISOString()
+      };
+      
+      // For now, just show an alert - this would integrate with Spree cart
+      alert('Design will be saved and added to cart. This feature is coming soon!');
+      
+      // TODO: Integrate with Spree cart system
+      // window.location.href = '<%= spree.cart_path %>';
+    }
+  });
+});
+</script>
+<% end %>
+
+<!-- The customization interface is handled by the layout -->
+<div style="display: none;">
+  <!-- Hidden content for the customizer - everything is in the layout -->
+  <p>Product: <%= @product.name %></p>
+  <p>Price: $<%= @product.price %></p>
+</div>

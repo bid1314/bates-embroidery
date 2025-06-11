@@ -1,0 +1,276 @@
+<!-- B2B Hero Section -->
+<section class="hero-section mb-5">
+  <div class="row align-items-center">
+    <div class="col-md-6">
+      <h1 class="display-4 fw-bold text-dark">Professional B2B Solutions</h1>
+      <p class="lead">Wholesale pricing, volume discounts, and dedicated support for businesses, event companies, and resellers.</p>
+      <% if user_signed_in? && current_user.b2b_customer? %>
+        <div class="d-flex gap-3">
+          <%= link_to "Browse Catalog", "#", class: "btn btn-dark btn-lg" %>
+          <%= link_to "Request Quote", "#", class: "btn btn-outline-dark btn-lg" %>
+        </div>
+      <% else %>
+        <div class="d-flex gap-3">
+          <%= link_to "Apply for B2B Account", b2b_register_path, class: "btn btn-dark btn-lg" %>
+          <%= link_to "Login to B2B Portal", b2b_login_path, class: "btn btn-outline-dark btn-lg" %>
+        </div>
+      <% end %>
+    </div>
+    <div class="col-md-6">
+      <img src="https://via.placeholder.com/600x400/2c3e50/ffffff?text=B2B+Solutions" class="img-fluid rounded shadow" alt="B2B Solutions">
+    </div>
+  </div>
+</section>
+
+<!-- B2B Benefits -->
+<section class="benefits-section mb-5">
+  <div class="row text-center">
+    <div class="col-md-3 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body">
+          <i class="fas fa-percentage fa-3x text-dark mb-3"></i>
+          <h5 class="card-title">Wholesale Pricing</h5>
+          <p class="card-text">Access to wholesale pricing with volume discounts for larger orders.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body">
+          <i class="fas fa-user-tie fa-3x text-dark mb-3"></i>
+          <h5 class="card-title">Dedicated Support</h5>
+          <p class="card-text">Personal account manager and priority customer support.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body">
+          <i class="fas fa-truck fa-3x text-dark mb-3"></i>
+          <h5 class="card-title">Drop Shipping</h5>
+          <p class="card-text">Direct shipping to your customers with your branding.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body">
+          <i class="fas fa-calculator fa-3x text-dark mb-3"></i>
+          <h5 class="card-title">Stitch Estimator</h5>
+          <p class="card-text">AI-powered stitch count estimation for accurate pricing.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing Information -->
+<section class="pricing-section mb-5">
+  <% if user_signed_in? && current_user.b2b_customer? %>
+    <!-- Show actual pricing for authenticated B2B users -->
+    <h2 class="mb-4">Your B2B Pricing</h2>
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-cut me-2"></i>Embroidery Pricing</h5>
+          </div>
+          <div class="card-body">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Stitch Count</th>
+                  <th>Price per Piece</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Up to 5,000 stitches</td><td>$3.50</td></tr>
+                <tr><td>5,001 - 10,000 stitches</td><td>$4.25</td></tr>
+                <tr><td>10,001 - 15,000 stitches</td><td>$5.00</td></tr>
+                <tr><td>15,001+ stitches</td><td>$0.35 per 1,000</td></tr>
+              </tbody>
+            </table>
+            <small class="text-muted">Minimum order: 12 pieces</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-print me-2"></i>Screen Printing Pricing</h5>
+          </div>
+          <div class="card-body">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Colors</th>
+                  <th>Setup Fee</th>
+                  <th>Price per Piece</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>1 Color</td><td>$25.00</td><td>$2.75</td></tr>
+                <tr><td>2 Colors</td><td>$25.00</td><td>$3.25</td></tr>
+                <tr><td>3 Colors</td><td>$25.00</td><td>$3.75</td></tr>
+                <tr><td>4+ Colors</td><td>$25.00</td><td>$4.25</td></tr>
+              </tbody>
+            </table>
+            <small class="text-muted">Minimum order: 24 pieces</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <!-- Show pricing placeholder for non-authenticated users -->
+    <h2 class="mb-4">B2B Pricing Available</h2>
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-cut me-2"></i>Embroidery Pricing</h5>
+          </div>
+          <div class="card-body">
+            <div class="pricing-hidden">
+              <i class="fas fa-lock fa-2x mb-3"></i>
+              <p><strong>Wholesale pricing available</strong></p>
+              <p>Login to your approved B2B account to view embroidery pricing.</p>
+              <%= link_to "Login", b2b_login_path, class: "btn btn-dark btn-sm" %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-header bg-dark text-white">
+            <h5 class="mb-0"><i class="fas fa-print me-2"></i>Screen Printing Pricing</h5>
+          </div>
+          <div class="card-body">
+            <div class="pricing-hidden">
+              <i class="fas fa-lock fa-2x mb-3"></i>
+              <p><strong>Wholesale pricing available</strong></p>
+              <p>Login to your approved B2B account to view screen printing pricing.</p>
+              <%= link_to "Login", b2b_login_path, class: "btn btn-dark btn-sm" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</section>
+
+<!-- Featured Products for B2B -->
+<section class="featured-products mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Popular B2B Products</h2>
+    <% if user_signed_in? && current_user.b2b_customer? %>
+      <%= link_to "View All Products", "#", class: "btn btn-outline-dark" %>
+    <% else %>
+      <%= link_to "Login to View Catalog", b2b_login_path, class: "btn btn-outline-dark" %>
+    <% end %>
+  </div>
+  
+  <div class="row">
+    <% 8.times do |i| %>
+      <div class="col-md-3 mb-4">
+        <div class="card product-card h-100">
+          <div class="position-relative">
+            <img src="https://via.placeholder.com/300x300/f8f9fa/6c757d?text=B2B+Product+<%= i + 1 %>" class="card-img-top" alt="B2B Product <%= i + 1 %>">
+            <div class="position-absolute top-0 end-0 m-2">
+              <span class="badge bg-dark">B2B</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <h6 class="card-title">Professional Polo <%= i + 1 %></h6>
+            <p class="card-text text-muted small">65/35 Poly/Cotton, Corporate Colors</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <% if user_signed_in? && current_user.b2b_customer? %>
+                <span class="h6 text-dark mb-0">$18.75</span>
+                <button class="btn btn-dark btn-sm">
+                  <i class="fas fa-plus me-1"></i>Add to Quote
+                </button>
+              <% else %>
+                <div class="pricing-hidden w-100 py-2">
+                  <small>Login for pricing</small>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<!-- B2B Application CTA -->
+<% unless user_signed_in? && current_user.b2b_customer? %>
+  <section class="application-cta mb-5">
+    <div class="card bg-dark text-white">
+      <div class="card-body text-center py-5">
+        <h3>Ready to Access B2B Pricing?</h3>
+        <p class="lead">Apply for a B2B account to unlock wholesale pricing and exclusive features.</p>
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="row text-start">
+              <div class="col-md-6">
+                <h6><i class="fas fa-check me-2"></i>What You'll Need:</h6>
+                <ul class="list-unstyled">
+                  <li>• Business Tax ID Number</li>
+                  <li>• Company Website</li>
+                  <li>• Expected Annual Volume</li>
+                  <li>• SanMar/S&S Account Numbers (if applicable)</li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h6><i class="fas fa-clock me-2"></i>Application Process:</h6>
+                <ul class="list-unstyled">
+                  <li>• Submit application form</li>
+                  <li>• Account verification (1-2 business days)</li>
+                  <li>• Approval notification</li>
+                  <li>• Immediate access to B2B pricing</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <%= link_to "Apply for B2B Account", b2b_register_path, class: "btn btn-light btn-lg me-3" %>
+          <%= link_to "Already Applied? Login", b2b_login_path, class: "btn btn-outline-light btn-lg" %>
+        </div>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<style>
+.hero-section {
+  padding: 60px 0;
+}
+
+.product-card {
+  transition: transform 0.2s;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.benefits-section .card {
+  transition: transform 0.2s;
+}
+
+.benefits-section .card:hover {
+  transform: translateY(-3px);
+}
+
+.pricing-hidden {
+  background-color: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  padding: 20px;
+  text-align: center;
+  color: #6c757d;
+  border-radius: 8px;
+}
+</style>
