@@ -2,7 +2,7 @@ class B2b::HomeController < ApplicationController
   before_action :set_b2b_context
   
   def index
-    @featured_products = Spree::Product.available.limit(8)
+    @featured_products = Spree::Product.where(available_on: ..Time.current).limit(8)
     @store_name = "Bates Embroidery - B2B Wholesale Portal"
     @store_tagline = "Professional Wholesale Services for Business Partners"
     

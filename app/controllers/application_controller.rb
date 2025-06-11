@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
     # Check for subdomain-based store routing
     subdomain = request.subdomain
     
-    case subdomain
+    @current_store = case subdomain
     when 'retail'
       find_or_create_retail_store
     when 'b2b'
@@ -26,6 +26,10 @@ class ApplicationController < ActionController::Base
       # Default to retail store for main domain
       find_or_create_retail_store
     end
+    
+    # Set Spree's current store
+    Spree::Current.store = @current_store if defined?(Spree::Current)
+    @current_store
   end
 
   def find_or_create_retail_store

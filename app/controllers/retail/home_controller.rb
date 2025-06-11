@@ -1,7 +1,7 @@
 class Retail::HomeController < ApplicationController
   
   def index
-    @featured_products = Spree::Product.available.limit(8)
+    @featured_products = Spree::Product.where(available_on: ..Time.current).limit(8)
     @store_name = "Bates Embroidery - Custom Apparel & Embroidery"
     @store_tagline = "Professional Custom Embroidery, Screen Printing & Promotional Products"
     
