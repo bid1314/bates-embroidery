@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load existing customization if available
     <% if @customization.design_data.present? %>
       try {
-        const designData = JSON.parse('<%= @customization.design_data.html_safe %>');
+        const designData = JSON.parse('<%= j(@customization.design_data) %>');
         imageEditor.loadImageFromURL(designData.imageUrl, 'CustomizedProduct');
       } catch (e) {
         console.log('No previous customization data');
