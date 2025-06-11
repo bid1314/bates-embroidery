@@ -53,7 +53,7 @@ gem "kaminari", "~> 1.2"
 gem "dotenv-rails", "~> 2.8"
 
 # CORS
-gem "rack-cors", "~> 2.0"
+gem "rack-cors", "~> 3.0"
 
 # JSON handling
 gem "oj", "~> 3.0"
